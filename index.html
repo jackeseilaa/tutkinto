@@ -532,7 +532,7 @@
 
 <!-- Action bar -->
 <div class="action-bar">
-  <button class="btn btn-reset" onclick="confirmReset()" title="Tyhjennä">🗑️</button>
+  <button class="btn btn-reset" onclick="confirmReset()" title="Seuraava kokelas">👤+</button>
   <button class="btn btn-print" onclick="window.print()">🖨️ Tulosta</button>
   <button class="btn btn-email" onclick="sendEmail()">✉️ Lähetä sähköposti</button>
 </div>
@@ -746,12 +746,13 @@ function sendEmail() {
 }
 
 function confirmReset() {
-  if (confirm('Tyhjennä kaikki tiedot? Tätä ei voi peruuttaa.')) {
-    resetAll();
+  if (confirm('Seuraava kokelas?\n\nTyhjentää kokelaan ja aluksen tiedot sekä rastit ja arvioinnin.\nPäivämäärä, olosuhteet ja vastaanottajan tiedot säilyvät.')) {
+    resetCokelas();
   }
 }
 
-function resetAll() {
+function resetCokelas() {
+  // Reset only kokelas/alus/rastit/arviointi — keep date, conditions, vastaanottaja
   initState();
   for (const secNum of Object.keys(sections)) {
     renderSection(parseInt(secNum));
@@ -759,18 +760,14 @@ function resetAll() {
   paatos = '';
   document.getElementById('btnHyvaksytty').className = 'paatos-btn';
   document.getElementById('btnUusinta').className = 'paatos-btn';
-  // Clear text fields
   ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail',
    'alusNimi','rekisteri','alustyyppi','moottori',
-   'paiva','vesialue','tuuli','nakyvyys',
    'vahvuudet','kehitettavaa'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  // Restore vastaanottaja defaults
-  document.getElementById('vastaanottajaNimi').value = 'Jarmo Aaltonen';
-  document.getElementById('vastaanottajaEmail').value = 'jacke.seilaa@gmail.com';
-  document.getElementById('vastaanottajaPuh').value = '+358 44 3808569';
+  // Scroll back to top so kokelas fields are visible
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   saveLocal();
 }
 
