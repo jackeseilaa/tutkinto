@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tutkintoraportti">
-<title>PORY – Tutkintoraportti</title>
+<title>SNOP – Tutkintoraportti</title>
 <style>
   :root {
     --blue: #0a4272;
@@ -364,7 +364,7 @@
 <body>
 
 <header>
-  <h1>🧭 Tutkintoraportti – PORY/SNOP</h1>
+  <h1>🧭 Tutkintoraportti – SNOP</h1>
   <p>Tarkistuslista ja tutkintoraportti / Veneilytaidon YTO:n vastaanottajalle</p>
   <div class="progress-bar">
     <div class="progress-fill" id="progressFill" style="width:0%"></div>
@@ -382,7 +382,7 @@
     </div>
     <div class="field-row">
       <label>Syntymäaika</label>
-      <input type="date" id="syntymaika">
+      <input type="text" id="syntymaika" placeholder="pp.kk.vvvv" inputmode="numeric">
     </div>
     <div class="field-row">
       <label>Osoite</label>
@@ -783,7 +783,7 @@ function beaufort(ms) {
   return b;
 }
 
-async function fetchWeather() {
+function fetchWeather() {
   const btn = document.getElementById('gpsBtn');
   const status = document.getElementById('gpsStatus');
   btn.disabled = true;
@@ -795,6 +795,19 @@ async function fetchWeather() {
     status.textContent = 'GPS ei ole käytettävissä tällä laitteella.';
     btn.disabled = false;
     return;
+  }
+
+  // Safari: getCurrentPosition must be called synchronously in the user gesture handler
+  // Also check permissions API first for better diagnostics
+  if (navigator.permissions) {
+    navigator.permissions.query({name: 'geolocation'}).then(result => {
+      if (result.state === 'denied') {
+        status.className = 'gps-status error';
+        status.textContent = 'Sijainti estetty. Asetukset → Tietosuoja → Sijaintipalvelut → Safari → Kysy tai Salli.';
+        btn.disabled = false;
+        return;
+      }
+    }).catch(() => {});
   }
 
   navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -861,9 +874,16 @@ async function fetchWeather() {
 
   }, (err) => {
     status.className = 'gps-status error';
-    status.textContent = err.code === 1
-      ? 'Sijaintilupa evätty. Salli sijainti selaimen asetuksista.'
-      : 'Sijainnin haku epäonnistui.';
+    if (err.code === 1) {
+      status.className = 'gps-status error';
+      status.textContent = 'Lupa evätty (err 1). iPad: Asetukset → Tietosuoja → Sijaintipalvelut → Safari Websites → Kysy tai Salli.';
+    } else if (err.code === 2) {
+      status.className = 'gps-status error';
+      status.textContent = 'Sijaintia ei saatu (err 2) — siirry ulos tai yritä uudelleen.';
+    } else {
+      status.className = 'gps-status error';
+      status.textContent = `GPS-virhe (koodi ${err.code}) — yritä uudelleen.`;
+    }
     btn.disabled = false;
   }, { timeout: 15000, maximumAge: 60000 });
 }
