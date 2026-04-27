@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tutkintoraportti">
@@ -23,11 +23,16 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html, body {
+    height: 100%;
+  }
   body {
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
     background: #f0f4f8;
     color: var(--text);
-    min-height: 100vh;
+    /* Avoid iOS viewport jump: do not use min-height:100vh */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   header {
@@ -907,11 +912,16 @@ function saveLocal() {
   } catch(e) {}
 }
 
+const VASTAANOTTAJA_DEFAULTS = {
+  vastaanottajaNimi: 'Jarmo Aaltonen',
+  vastaanottajaEmail: 'jacke.seilaa@gmail.com',
+  vastaanottajaPuh: '+358 44 3808569'
+};
+
 function loadLocal() {
   try {
     const raw = localStorage.getItem('tutkintoraportti');
-    if (!raw) return;
-    const data = JSON.parse(raw);
+    const data = raw ? JSON.parse(raw) : {};
     if (data.state) {
       for (const [sec, arr] of Object.entries(data.state)) {
         if (state[sec]) state[sec] = arr;
@@ -925,12 +935,61 @@ function loadLocal() {
       }
     }
   } catch(e) {}
+  // Always restore vastaanottaja defaults if field ended up empty
+  for (const [id, def] of Object.entries(VASTAANOTTAJA_DEFAULTS)) {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = def;
+  }
 }
 
 // Auto-save on field change
 document.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('input', saveLocal);
 });
+
+// ---- iOS Safari viewport jump fix ----
+// When the keyboard opens, Safari shrinks the viewport and scrolls.
+// We capture the scroll position on focus and restore it so the page
+// doesn't jump away from the field the user is typing in.
+(function() {
+  let savedScrollY = 0;
+  let focusedEl = null;
+
+  function onFocus(e) {
+    if (!e.target.matches('input, textarea, select')) return;
+    focusedEl = e.target;
+    savedScrollY = window.scrollY;
+
+    // After keyboard animates in (~400ms), scroll the field into view gently
+    setTimeout(() => {
+      if (focusedEl) {
+        focusedEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }, 400);
+  }
+
+  function onBlur(e) {
+    focusedEl = null;
+  }
+
+  // visualViewport fires when keyboard appears/disappears
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      // Keyboard just appeared or disappeared — if we have a focused field, keep it visible
+      if (focusedEl) {
+        setTimeout(() => {
+          if (focusedEl) {
+            focusedEl.scrollIntoView({ block: 'center', behavior: 'instant' });
+          }
+        }, 50);
+      }
+    });
+  }
+
+  document.addEventListener('focusin', onFocus, true);
+  document.addEventListener('focusout', onBlur, true);
+})();
+// ---- end iOS fix ----
 
 // Init
 initState();
