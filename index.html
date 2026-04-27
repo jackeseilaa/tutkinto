@@ -23,54 +23,56 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
+  /* KEY iOS FIX: html and body never scroll — only .scroll-wrap scrolls.
+     This prevents Safari from resizing the layout when the keyboard appears. */
+  html {
     height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
   body {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     background: #f0f4f8;
     color: var(--text);
-    /* Avoid iOS viewport jump: do not use min-height:100vh */
-    overscroll-behavior: none;
+  }
+
+  /* The ONE scrollable container in the whole app */
+  .scroll-wrap {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: 20px;
   }
 
   header {
     background: var(--blue);
     color: white;
-    padding: 16px 20px 12px;
-    position: static;
+    padding: 14px 16px 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
 
-  header h1 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
-
-  header p {
-    font-size: 0.78rem;
-    opacity: 0.8;
-    margin-top: 2px;
-  }
+  header h1 { font-size: 1.05rem; font-weight: 700; }
+  header p { font-size: 0.76rem; opacity: 0.8; margin-top: 2px; }
 
   .progress-bar {
     background: rgba(255,255,255,0.2);
-    height: 4px;
-    border-radius: 2px;
-    margin-top: 10px;
-    overflow: hidden;
+    height: 4px; border-radius: 2px;
+    margin-top: 8px; overflow: hidden;
   }
   .progress-fill {
-    height: 100%;
-    background: #4fc3f7;
-    border-radius: 2px;
-    transition: width 0.4s ease;
+    height: 100%; background: #4fc3f7;
+    border-radius: 2px; transition: width 0.4s ease;
   }
 
   .section {
-    margin: 14px 12px 0;
+    margin: 12px 12px 0;
     background: white;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -80,8 +82,8 @@
   .section-header {
     background: var(--blue);
     color: white;
-    padding: 10px 14px;
-    font-size: 0.82rem;
+    padding: 9px 14px;
+    font-size: 0.80rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -90,9 +92,9 @@
   .section-note {
     background: var(--light);
     border-left: 3px solid var(--blue);
-    font-size: 0.78rem;
+    font-size: 0.77rem;
     color: var(--muted);
-    padding: 8px 14px;
+    padding: 7px 14px;
     line-height: 1.4;
     font-style: italic;
   }
@@ -100,7 +102,7 @@
   .item {
     display: flex;
     align-items: flex-start;
-    padding: 13px 14px;
+    padding: 12px 14px;
     border-bottom: 1px solid #eef2f7;
     gap: 12px;
     cursor: pointer;
@@ -108,91 +110,60 @@
     -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
-
   .item:last-child { border-bottom: none; }
   .item:active { background: #f0f4f8; }
-
-  .item.checked {
-    background: var(--checked-bg);
-  }
+  .item.checked { background: var(--checked-bg); }
 
   .checkbox {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 28px; height: 28px;
     border: 2px solid var(--border);
     border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 16px;
     transition: all 0.15s;
     margin-top: 1px;
     background: white;
   }
-
   .item.checked .checkbox {
     background: var(--checked-border);
     border-color: var(--checked-border);
     color: white;
   }
-
   .item-text {
-    flex: 1;
-    font-size: 0.88rem;
-    line-height: 1.45;
-    color: var(--text);
+    flex: 1; font-size: 0.87rem; line-height: 1.45; color: var(--text);
   }
+  .item.checked .item-text { color: #256d3b; }
 
-  .item.checked .item-text {
-    color: #256d3b;
-  }
-
-  /* Fields section */
-  .fields-section {
-    margin: 14px 12px 0;
+  .fields-section, .arviointi-section {
+    margin: 12px 12px 0;
     background: white;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
   }
 
-  .field-group {
-    padding: 0 14px 12px;
-  }
-
-  .field-group + .field-group {
-    border-top: 1px solid #eef2f7;
-    padding-top: 12px;
-  }
+  .field-group { padding: 0 14px 12px; }
+  .field-group + .field-group { border-top: 1px solid #eef2f7; padding-top: 12px; }
 
   .field-group-title {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--blue);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 12px 0 8px;
+    font-size: 0.71rem; font-weight: 700;
+    color: var(--blue); text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 11px 0 7px;
   }
-
-  .field-row {
-    margin-bottom: 10px;
-  }
+  .field-row { margin-bottom: 9px; }
 
   label {
-    display: block;
-    font-size: 0.76rem;
-    color: var(--muted);
-    margin-bottom: 3px;
-    font-weight: 600;
+    display: block; font-size: 0.75rem;
+    color: var(--muted); margin-bottom: 3px; font-weight: 600;
   }
 
   input[type="text"], input[type="email"], input[type="date"], textarea, select {
     width: 100%;
     border: 1.5px solid var(--border);
     border-radius: 7px;
-    padding: 9px 11px;
-    font-size: 0.9rem;
+    padding: 10px 11px;
+    font-size: 16px; /* 16px prevents iOS auto-zoom on focus */
     font-family: inherit;
     color: var(--text);
     background: #fafcff;
@@ -201,172 +172,92 @@
     appearance: none;
     outline: none;
   }
+  input:focus, textarea:focus { border-color: var(--blue); background: white; }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
-  input:focus, textarea:focus {
-    border-color: var(--blue);
-    background: white;
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 70px;
-    line-height: 1.4;
-  }
-
-  /* Arviointi */
-  .arviointi-section {
-    margin: 14px 12px 0;
-    background: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-
-  .paatos-row {
-    display: flex;
-    gap: 10px;
-    padding: 10px 14px 14px;
-  }
-
+  .paatos-row { display: flex; gap: 10px; padding: 10px 14px 14px; }
   .paatos-btn {
-    flex: 1;
-    padding: 12px 8px;
-    border-radius: 8px;
-    border: 2px solid var(--border);
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: white;
-    color: var(--text);
+    flex: 1; padding: 12px 8px;
+    border-radius: 8px; border: 2px solid var(--border);
+    font-size: 0.9rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.15s;
+    background: white; color: var(--text);
     -webkit-tap-highlight-color: transparent;
   }
+  .paatos-btn.selected-hyvaksytty { background: #28a745; border-color: #28a745; color: white; }
+  .paatos-btn.selected-uusinta { background: #dc3545; border-color: #dc3545; color: white; }
 
-  .paatos-btn.selected-hyvaksytty {
-    background: #28a745;
-    border-color: #28a745;
-    color: white;
-  }
-
-  .paatos-btn.selected-uusinta {
-    background: #dc3545;
-    border-color: #dc3545;
-    color: white;
-  }
-
-  /* Bottom action bar */
   .action-bar {
-    position: static;
+    margin: 12px 12px 0;
     background: white;
-    border-top: 1px solid var(--border);
     border-radius: var(--radius);
-    margin: 14px 12px 20px;
     padding: 10px 12px;
-    display: flex;
-    gap: 10px;
+    display: flex; gap: 10px;
     box-shadow: var(--shadow);
   }
-
   .btn {
-    flex: 1;
-    padding: 13px 10px;
-    border-radius: 9px;
-    border: none;
-    font-family: inherit;
-    font-size: 0.88rem;
-    font-weight: 700;
+    flex: 1; padding: 13px 10px;
+    border-radius: 9px; border: none;
+    font-family: inherit; font-size: 0.87rem; font-weight: 700;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: all 0.15s;
     -webkit-tap-highlight-color: transparent;
   }
-
   .btn-reset {
-    background: #f0f4f8;
-    color: var(--muted);
+    background: #f0f4f8; color: var(--muted);
     border: 1.5px solid var(--border);
-    flex: 0 0 auto;
-    width: 52px;
-    padding: 13px 0;
+    flex: 0 0 auto; width: 52px; padding: 13px 0;
+    font-size: 1rem;
   }
-
-  .btn-print {
-    background: var(--blue);
-    color: white;
-  }
-
-  .btn-email {
-    background: var(--gold);
-    color: white;
-  }
-
-  .btn:active { opacity: 0.85; transform: scale(0.98); }
-
-  /* Print styles */
-  @media print {
-    body { background: white; padding: 0; }
-    header { position: static; background: none; color: black; box-shadow: none; border-bottom: 2px solid black; }
-    header h1 { color: black; font-size: 1.2rem; }
-    header p, .progress-bar { display: none; }
-    .action-bar { display: none; }
-    .section, .fields-section, .arviointi-section {
-      margin: 10px 0 0;
-      box-shadow: none;
-      border: 1px solid #aaa;
-      break-inside: avoid;
-    }
-    .section-header { background: #ddd; color: black; }
-    .item { break-inside: avoid; }
-    .paatos-row { gap: 20px; }
-    .paatos-btn { border: 1px solid #aaa; }
-    .paatos-btn.selected-hyvaksytty { background: #c8e6c9; color: black; border-color: #4caf50; }
-    .paatos-btn.selected-uusinta { background: #ffcdd2; color: black; border-color: #ef9a9a; }
-    input, textarea { border: 1px solid #bbb; background: white; }
-    body { font-size: 11pt; }
-  }
+  .btn-print { background: var(--blue); color: white; }
+  .btn-email { background: var(--gold); color: white; }
+  .btn:active { opacity: 0.82; transform: scale(0.97); }
 
   .counter {
-    font-size: 0.72rem;
-    color: var(--muted);
+    font-size: 0.71rem; color: var(--muted);
     padding: 5px 14px 8px;
-    border-top: 1px solid #eef2f7;
-    text-align: right;
+    border-top: 1px solid #eef2f7; text-align: right;
   }
 
   .gps-btn {
-    width: 100%;
-    padding: 11px 14px;
+    width: 100%; padding: 11px 14px;
     margin: 6px 0 10px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 0.88rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.15s;
+    background: var(--blue); color: white;
+    border: none; border-radius: 8px;
+    font-family: inherit; font-size: 0.87rem; font-weight: 700;
+    cursor: pointer; transition: opacity 0.15s;
     -webkit-tap-highlight-color: transparent;
   }
   .gps-btn:active { opacity: 0.8; }
   .gps-btn:disabled { opacity: 0.5; cursor: default; }
 
   .gps-status {
-    font-size: 0.78rem;
-    color: var(--muted);
-    padding: 0 0 6px;
-    min-height: 18px;
-    text-align: center;
+    font-size: 0.77rem; color: var(--muted);
+    padding: 0 0 6px; min-height: 18px; text-align: center;
   }
   .gps-status.error { color: #dc3545; }
   .gps-status.ok { color: #28a745; }
+
+  @media print {
+    html, body { height: auto; overflow: visible; position: static; }
+    .scroll-wrap { position: static; overflow: visible; }
+    .action-bar { display: none; }
+    header { background: none; color: black; box-shadow: none; border-bottom: 2px solid black; }
+    header h1 { color: black; }
+    header p, .progress-bar { display: none; }
+    .section, .fields-section, .arviointi-section {
+      margin: 8px 0 0; box-shadow: none; border: 1px solid #aaa; break-inside: avoid;
+    }
+    .section-header { background: #ddd; color: black; }
+    .paatos-btn.selected-hyvaksytty { background: #c8e6c9; color: black; border-color: #4caf50; }
+    .paatos-btn.selected-uusinta { background: #ffcdd2; color: black; border-color: #ef9a9a; }
+    input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
+  }
 </style>
 </head>
 <body>
+<div class="scroll-wrap" id="scrollWrap">
 
 <header>
   <h1>🧭 Tutkintoraportti – SNOP</h1>
@@ -376,7 +267,7 @@
   </div>
 </header>
 
-<!-- Kokelaan tiedot yläosassa -->
+<!-- Kokelaan tiedot -->
 <div class="fields-section">
   <div class="section-header">📋 KOKELAAN JA ALUKSEN TIEDOT</div>
   <div class="field-group">
@@ -395,7 +286,7 @@
     </div>
     <div class="field-row">
       <label>Puhelinnumero</label>
-      <input type="text" id="puhelin" placeholder="+358 xx xxx xxxx">
+      <input type="text" id="puhelin" placeholder="+358 xx xxx xxxx" inputmode="tel">
     </div>
     <div class="field-row">
       <label>Sähköposti</label>
@@ -451,21 +342,21 @@
   <div class="section-note">Rastita tutkinnossa käydyt tehtävät. Kaikissa tehtävissä arvioidaan kokelaan kykyä johtaa miehistöä (viestinnän selkeys, oikea-aikaisuus ja rauhallisuus).</div>
 </div>
 
-<!-- 1. VALMISTELUT JA TURVALLISUUS -->
+<!-- 1 -->
 <div class="section">
   <div class="section-header">1. VALMISTELUT JA TURVALLISUUS</div>
   <div id="sec1"></div>
   <div class="counter" id="cnt1"></div>
 </div>
 
-<!-- 2. ALUKSEN KÄSITTELY -->
+<!-- 2 -->
 <div class="section">
   <div class="section-header">2. ALUKSEN KÄSITTELY</div>
   <div id="sec2"></div>
   <div class="counter" id="cnt2"></div>
 </div>
 
-<!-- 3. MOOTTORIAJO -->
+<!-- 3 -->
 <div class="section">
   <div class="section-header">3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)</div>
   <div class="section-note">Täytä vain moottorivenetutkinnossa</div>
@@ -473,7 +364,7 @@
   <div class="counter" id="cnt3"></div>
 </div>
 
-<!-- 4. PURJEHDUS -->
+<!-- 4 -->
 <div class="section">
   <div class="section-header">4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)</div>
   <div class="section-note">Täytä vain purjevenetutkinnossa</div>
@@ -481,21 +372,21 @@
   <div class="counter" id="cnt4"></div>
 </div>
 
-<!-- 5. NAVIGOINTI -->
+<!-- 5 -->
 <div class="section">
   <div class="section-header">5. NAVIGOINTI JA TILANTEEN HALLINTA</div>
   <div id="sec5"></div>
   <div class="counter" id="cnt5"></div>
 </div>
 
-<!-- 6. POB -->
+<!-- 6 -->
 <div class="section">
   <div class="section-header">6. HENKILÖ YLI LAIDAN (POB) – Tehdään aina</div>
   <div id="sec6"></div>
   <div class="counter" id="cnt6"></div>
 </div>
 
-<!-- ARVIOINTI -->
+<!-- Arviointi -->
 <div class="arviointi-section">
   <div class="section-header">ARVIOINTI</div>
   <div class="field-group">
@@ -536,6 +427,8 @@
   <button class="btn btn-print" onclick="window.print()">🖨️ Tulosta</button>
   <button class="btn btn-email" onclick="sendEmail()">✉️ Lähetä sähköposti</button>
 </div>
+
+</div><!-- end .scroll-wrap -->
 
 <script>
 const sections = {
@@ -767,7 +660,7 @@ function resetCokelas() {
     if (el) el.value = '';
   });
   // Scroll back to top so kokelas fields are visible
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('scrollWrap').scrollTo({ top: 0, behavior: 'smooth' });
   saveLocal();
 }
 
@@ -944,49 +837,7 @@ document.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('input', saveLocal);
 });
 
-// ---- iOS Safari viewport jump fix ----
-// When the keyboard opens, Safari shrinks the viewport and scrolls.
-// We capture the scroll position on focus and restore it so the page
-// doesn't jump away from the field the user is typing in.
-(function() {
-  let savedScrollY = 0;
-  let focusedEl = null;
 
-  function onFocus(e) {
-    if (!e.target.matches('input, textarea, select')) return;
-    focusedEl = e.target;
-    savedScrollY = window.scrollY;
-
-    // After keyboard animates in (~400ms), scroll the field into view gently
-    setTimeout(() => {
-      if (focusedEl) {
-        focusedEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }
-    }, 400);
-  }
-
-  function onBlur(e) {
-    focusedEl = null;
-  }
-
-  // visualViewport fires when keyboard appears/disappears
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      // Keyboard just appeared or disappeared — if we have a focused field, keep it visible
-      if (focusedEl) {
-        setTimeout(() => {
-          if (focusedEl) {
-            focusedEl.scrollIntoView({ block: 'center', behavior: 'instant' });
-          }
-        }, 50);
-      }
-    });
-  }
-
-  document.addEventListener('focusin', onFocus, true);
-  document.addEventListener('focusout', onBlur, true);
-})();
-// ---- end iOS fix ----
 
 // Init
 initState();
