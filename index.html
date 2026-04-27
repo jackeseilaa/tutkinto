@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tutkintoraportti">
@@ -28,16 +28,13 @@
     background: #f0f4f8;
     color: var(--text);
     min-height: 100vh;
-    padding-bottom: 80px;
   }
 
   header {
     background: var(--blue);
     color: white;
     padding: 16px 20px 12px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: static;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
 
@@ -255,17 +252,15 @@
 
   /* Bottom action bar */
   .action-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: static;
     background: white;
     border-top: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 14px 12px 20px;
     padding: 10px 12px;
     display: flex;
     gap: 10px;
-    z-index: 100;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    box-shadow: var(--shadow);
   }
 
   .btn {
@@ -336,6 +331,34 @@
     border-top: 1px solid #eef2f7;
     text-align: right;
   }
+
+  .gps-btn {
+    width: 100%;
+    padding: 11px 14px;
+    margin: 6px 0 10px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gps-btn:active { opacity: 0.8; }
+  .gps-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .gps-status {
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 0 0 6px;
+    min-height: 18px;
+    text-align: center;
+  }
+  .gps-status.error { color: #dc3545; }
+  .gps-status.ok { color: #28a745; }
 </style>
 </head>
 <body>
@@ -399,8 +422,12 @@
       <label>Päivämäärä</label>
       <input type="date" id="paiva">
     </div>
+    <button class="gps-btn" id="gpsBtn" onclick="fetchWeather()">
+      📍 Hae sijainti &amp; tuulitiedot GPS:llä
+    </button>
+    <div id="gpsStatus" class="gps-status"></div>
     <div class="field-row">
-      <label>Vesialue</label>
+      <label>Vesialue / sijainti</label>
       <input type="text" id="vesialue" placeholder="esim. Helsingin edustan saaristo">
     </div>
     <div class="field-row">
@@ -485,22 +512,20 @@
     <div class="field-group-title">Tutkinnon vastaanottaja</div>
     <div class="field-row">
       <label>Nimi</label>
-      <input type="text" id="vastaanottajaNimi" placeholder="Etunimi Sukunimi">
+      <input type="text" id="vastaanottajaNimi" value="Jarmo Aaltonen">
     </div>
     <div class="field-row">
       <label>Sähköposti</label>
-      <input type="email" id="vastaanottajaEmail" placeholder="tutkinto@example.fi">
+      <input type="email" id="vastaanottajaEmail" value="jacke.seilaa@gmail.com">
     </div>
     <div class="field-row">
       <label>Puhelinnumero</label>
-      <input type="text" id="vastaanottajaPuh" placeholder="+358 xx xxx xxxx">
+      <input type="text" id="vastaanottajaPuh" value="+358 44 3808569">
     </div>
   </div>
 </div>
 
-<div style="height:14px"></div>
-
-<!-- Bottom action bar -->
+<!-- Action bar -->
 <div class="action-bar">
   <button class="btn btn-reset" onclick="confirmReset()" title="Tyhjennä">🗑️</button>
   <button class="btn btn-print" onclick="window.print()">🖨️ Tulosta</button>
@@ -733,12 +758,114 @@ function resetAll() {
   ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail',
    'alusNimi','rekisteri','alustyyppi','moottori',
    'paiva','vesialue','tuuli','nakyvyys',
-   'vahvuudet','kehitettavaa',
-   'vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
+   'vahvuudet','kehitettavaa'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  // Restore vastaanottaja defaults
+  document.getElementById('vastaanottajaNimi').value = 'Jarmo Aaltonen';
+  document.getElementById('vastaanottajaEmail').value = 'jacke.seilaa@gmail.com';
+  document.getElementById('vastaanottajaPuh').value = '+358 44 3808569';
   saveLocal();
+}
+
+// Wind direction degrees -> compass abbreviation (Finnish)
+function windDir(deg) {
+  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  return dirs[Math.round(deg / 22.5) % 16];
+}
+
+// Beaufort scale for reference label
+function beaufort(ms) {
+  const scale = [0.3,1.6,3.4,5.5,8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7];
+  let b = 0;
+  while (b < scale.length && ms >= scale[b]) b++;
+  return b;
+}
+
+async function fetchWeather() {
+  const btn = document.getElementById('gpsBtn');
+  const status = document.getElementById('gpsStatus');
+  btn.disabled = true;
+  status.className = 'gps-status';
+  status.textContent = '📡 Haetaan sijaintia...';
+
+  if (!navigator.geolocation) {
+    status.className = 'gps-status error';
+    status.textContent = 'GPS ei ole käytettävissä tällä laitteella.';
+    btn.disabled = false;
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude.toFixed(4);
+    const lon = pos.coords.longitude.toFixed(4);
+    status.textContent = `📍 Sijainti: ${lat}°N ${lon}°E — haetaan säätietoja...`;
+
+    try {
+      // Reverse geocode with nominatim
+      let placeName = '';
+      try {
+        const geoResp = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`,
+          { headers: { 'Accept-Language': 'fi' } }
+        );
+        const geoData = await geoResp.json();
+        const addr = geoData.address || {};
+        // Pick most useful place label for maritime context
+        placeName = addr.sea || addr.bay || addr.water ||
+                    addr.municipality || addr.city || addr.town ||
+                    addr.village || addr.county || '';
+      } catch(e) {}
+
+      // Open-Meteo — current weather, no API key needed
+      const weatherResp = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+        `&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility,weather_code` +
+        `&wind_speed_unit=ms&timezone=auto`
+      );
+      const wd = await weatherResp.json();
+      const cur = wd.current;
+
+      const speedMs = cur.wind_speed_10m;
+      const gustMs = cur.wind_gusts_10m;
+      const dirDeg = cur.wind_direction_10m;
+      const visM = cur.visibility;
+      const dirStr = windDir(dirDeg);
+      const bft = beaufort(speedMs);
+
+      // Fill fields
+      const tuuliStr = `${dirStr} ${speedMs.toFixed(1)} m/s (puuskat ${gustMs.toFixed(1)} m/s, Bft ${bft})`;
+      document.getElementById('tuuli').value = tuuliStr;
+
+      let visStr = '';
+      if (visM >= 10000) visStr = 'Hyvä (>10 km)';
+      else if (visM >= 5000) visStr = `Kohtalainen (${(visM/1000).toFixed(1)} km)`;
+      else if (visM >= 1000) visStr = `Heikko (${(visM/1000).toFixed(1)} km)`;
+      else visStr = `Sumu / erittäin heikko (${visM} m)`;
+      document.getElementById('nakyvyys').value = visStr;
+
+      if (placeName) {
+        document.getElementById('vesialue').value = placeName;
+      }
+
+      status.className = 'gps-status ok';
+      status.textContent = `✅ Päivitetty ${new Date().toLocaleTimeString('fi-FI', {hour:'2-digit',minute:'2-digit'})}`;
+      saveLocal();
+
+    } catch(e) {
+      status.className = 'gps-status error';
+      status.textContent = 'Säätietojen haku epäonnistui. Tarkista verkkoyhteys.';
+    }
+    btn.disabled = false;
+
+  }, (err) => {
+    status.className = 'gps-status error';
+    status.textContent = err.code === 1
+      ? 'Sijaintilupa evätty. Salli sijainti selaimen asetuksista.'
+      : 'Sijainnin haku epäonnistui.';
+    btn.disabled = false;
+  }, { timeout: 15000, maximumAge: 60000 });
 }
 
 function saveLocal() {
@@ -790,6 +917,15 @@ initState();
 loadLocal();
 for (const secNum of Object.keys(sections)) {
   renderSection(parseInt(secNum));
+}
+
+// Set today's date if not already saved
+if (!document.getElementById('paiva').value) {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('paiva').value = `${yyyy}-${mm}-${dd}`;
 }
 </script>
 </body>
