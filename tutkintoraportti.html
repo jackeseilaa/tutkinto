@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tutkintoraportti">
+<title>PORY – Tutkintoraportti</title>
+<style>
+  :root {
+    --blue: #0a4272;
+    --gold: #92400e;
+    --light: #e8f0f7;
+    --border: #c5d5e8;
+    --checked-bg: #d4edda;
+    --checked-border: #28a745;
+    --text: #1a2a3a;
+    --muted: #6c7a8a;
+    --radius: 10px;
+    --shadow: 0 2px 8px rgba(10,66,114,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f0f4f8;
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  header {
+    background: var(--blue);
+    color: white;
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  header p {
+    font-size: 0.78rem;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  .progress-bar {
+    background: rgba(255,255,255,0.2);
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #4fc3f7;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .section {
+    margin: 14px 12px 0;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .section-header {
+    background: var(--blue);
+    color: white;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .section-note {
+    background: var(--light);
+    border-left: 3px solid var(--blue);
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 8px 14px;
+    line-height: 1.4;
+    font-style: italic;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    padding: 13px 14px;
+    border-bottom: 1px solid #eef2f7;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .item:last-child { border-bottom: none; }
+  .item:active { background: #f0f4f8; }
+
+  .item.checked {
+    background: var(--checked-bg);
+  }
+
+  .checkbox {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.15s;
+    margin-top: 1px;
+    background: white;
+  }
+
+  .item.checked .checkbox {
+    background: var(--checked-border);
+    border-color: var(--checked-border);
+    color: white;
+  }
+
+  .item-text {
+    flex: 1;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--text);
+  }
+
+  .item.checked .item-text {
+    color: #256d3b;
+  }
+
+  /* Fields section */
+  .fields-section {
+    margin: 14px 12px 0;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .field-group {
+    padding: 0 14px 12px;
+  }
+
+  .field-group + .field-group {
+    border-top: 1px solid #eef2f7;
+    padding-top: 12px;
+  }
+
+  .field-group-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 0 8px;
+  }
+
+  .field-row {
+    margin-bottom: 10px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+
+  input[type="text"], input[type="email"], input[type="date"], textarea, select {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 11px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text);
+    background: #fafcff;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--blue);
+    background: white;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 70px;
+    line-height: 1.4;
+  }
+
+  /* Arviointi */
+  .arviointi-section {
+    margin: 14px 12px 0;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .paatos-row {
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px 14px;
+  }
+
+  .paatos-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .paatos-btn.selected-hyvaksytty {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+  }
+
+  .paatos-btn.selected-uusinta {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+
+  /* Bottom action bar */
+  .action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  }
+
+  .btn {
+    flex: 1;
+    padding: 13px 10px;
+    border-radius: 9px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-reset {
+    background: #f0f4f8;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    flex: 0 0 auto;
+    width: 52px;
+    padding: 13px 0;
+  }
+
+  .btn-print {
+    background: var(--blue);
+    color: white;
+  }
+
+  .btn-email {
+    background: var(--gold);
+    color: white;
+  }
+
+  .btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  /* Print styles */
+  @media print {
+    body { background: white; padding: 0; }
+    header { position: static; background: none; color: black; box-shadow: none; border-bottom: 2px solid black; }
+    header h1 { color: black; font-size: 1.2rem; }
+    header p, .progress-bar { display: none; }
+    .action-bar { display: none; }
+    .section, .fields-section, .arviointi-section {
+      margin: 10px 0 0;
+      box-shadow: none;
+      border: 1px solid #aaa;
+      break-inside: avoid;
+    }
+    .section-header { background: #ddd; color: black; }
+    .item { break-inside: avoid; }
+    .paatos-row { gap: 20px; }
+    .paatos-btn { border: 1px solid #aaa; }
+    .paatos-btn.selected-hyvaksytty { background: #c8e6c9; color: black; border-color: #4caf50; }
+    .paatos-btn.selected-uusinta { background: #ffcdd2; color: black; border-color: #ef9a9a; }
+    input, textarea { border: 1px solid #bbb; background: white; }
+    body { font-size: 11pt; }
+  }
+
+  .counter {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 5px 14px 8px;
+    border-top: 1px solid #eef2f7;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧭 Tutkintoraportti – PORY/SNOP</h1>
+  <p>Tarkistuslista ja tutkintoraportti / Veneilytaidon YTO:n vastaanottajalle</p>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</header>
+
+<!-- Kokelaan tiedot yläosassa -->
+<div class="fields-section">
+  <div class="section-header">📋 KOKELAAN JA ALUKSEN TIEDOT</div>
+  <div class="field-group">
+    <div class="field-group-title">Kokelas</div>
+    <div class="field-row">
+      <label>Nimi</label>
+      <input type="text" id="kokelasNimi" placeholder="Etunimi Sukunimi">
+    </div>
+    <div class="field-row">
+      <label>Syntymäaika</label>
+      <input type="date" id="syntymaika">
+    </div>
+    <div class="field-row">
+      <label>Osoite</label>
+      <input type="text" id="osoite" placeholder="Katuosoite, postinumero, kaupunki">
+    </div>
+    <div class="field-row">
+      <label>Puhelinnumero</label>
+      <input type="text" id="puhelin" placeholder="+358 xx xxx xxxx">
+    </div>
+    <div class="field-row">
+      <label>Sähköposti</label>
+      <input type="email" id="kokelasEmail" placeholder="etunimi.sukunimi@email.fi">
+    </div>
+  </div>
+  <div class="field-group">
+    <div class="field-group-title">Alus</div>
+    <div class="field-row">
+      <label>Aluksen nimi</label>
+      <input type="text" id="alusNimi" placeholder="s/y tai m/s ...">
+    </div>
+    <div class="field-row">
+      <label>Rekisterinumero</label>
+      <input type="text" id="rekisteri" placeholder="Rekisterinumero">
+    </div>
+    <div class="field-row">
+      <label>Alustyyppi</label>
+      <input type="text" id="alustyyppi" placeholder="esim. Absolut 37, purjevene">
+    </div>
+    <div class="field-row">
+      <label>Moottoriteho</label>
+      <input type="text" id="moottori" placeholder="esim. 30 hv / Volvo D1-30">
+    </div>
+  </div>
+  <div class="field-group">
+    <div class="field-group-title">Tutkinto-olosuhteet</div>
+    <div class="field-row">
+      <label>Päivämäärä</label>
+      <input type="date" id="paiva">
+    </div>
+    <div class="field-row">
+      <label>Vesialue</label>
+      <input type="text" id="vesialue" placeholder="esim. Helsingin edustan saaristo">
+    </div>
+    <div class="field-row">
+      <label>Tuuli</label>
+      <input type="text" id="tuuli" placeholder="esim. SW 5–8 m/s">
+    </div>
+    <div class="field-row">
+      <label>Näkyvyys</label>
+      <input type="text" id="nakyvyys" placeholder="esim. Hyvä, >5 km">
+    </div>
+  </div>
+</div>
+
+<!-- Yleinen ohje -->
+<div class="section">
+  <div class="section-note">Rastita tutkinnossa käydyt tehtävät. Kaikissa tehtävissä arvioidaan kokelaan kykyä johtaa miehistöä (viestinnän selkeys, oikea-aikaisuus ja rauhallisuus).</div>
+</div>
+
+<!-- 1. VALMISTELUT JA TURVALLISUUS -->
+<div class="section">
+  <div class="section-header">1. VALMISTELUT JA TURVALLISUUS</div>
+  <div id="sec1"></div>
+  <div class="counter" id="cnt1"></div>
+</div>
+
+<!-- 2. ALUKSEN KÄSITTELY -->
+<div class="section">
+  <div class="section-header">2. ALUKSEN KÄSITTELY</div>
+  <div id="sec2"></div>
+  <div class="counter" id="cnt2"></div>
+</div>
+
+<!-- 3. MOOTTORIAJO -->
+<div class="section">
+  <div class="section-header">3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)</div>
+  <div class="section-note">Täytä vain moottorivenetutkinnossa</div>
+  <div id="sec3"></div>
+  <div class="counter" id="cnt3"></div>
+</div>
+
+<!-- 4. PURJEHDUS -->
+<div class="section">
+  <div class="section-header">4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)</div>
+  <div class="section-note">Täytä vain purjevenetutkinnossa</div>
+  <div id="sec4"></div>
+  <div class="counter" id="cnt4"></div>
+</div>
+
+<!-- 5. NAVIGOINTI -->
+<div class="section">
+  <div class="section-header">5. NAVIGOINTI JA TILANTEEN HALLINTA</div>
+  <div id="sec5"></div>
+  <div class="counter" id="cnt5"></div>
+</div>
+
+<!-- 6. POB -->
+<div class="section">
+  <div class="section-header">6. HENKILÖ YLI LAIDAN (POB) – Tehdään aina</div>
+  <div id="sec6"></div>
+  <div class="counter" id="cnt6"></div>
+</div>
+
+<!-- ARVIOINTI -->
+<div class="arviointi-section">
+  <div class="section-header">ARVIOINTI</div>
+  <div class="field-group">
+    <div class="field-group-title">Vahvuudet</div>
+    <textarea id="vahvuudet" placeholder="Kokelaan vahvuudet tutkintosuorituksessa..."></textarea>
+  </div>
+  <div class="field-group">
+    <div class="field-group-title">Kehitettävää</div>
+    <textarea id="kehitettavaa" placeholder="Kehittämistä vaativat osa-alueet..."></textarea>
+  </div>
+  <div class="field-group">
+    <div class="field-group-title">Päätös</div>
+    <div class="paatos-row">
+      <button class="paatos-btn" id="btnHyvaksytty" onclick="setPaatos('hyvaksytty')">✅ Hyväksytty</button>
+      <button class="paatos-btn" id="btnUusinta" onclick="setPaatos('uusinta')">🔄 Uusinta vaaditaan</button>
+    </div>
+  </div>
+  <div class="field-group">
+    <div class="field-group-title">Tutkinnon vastaanottaja</div>
+    <div class="field-row">
+      <label>Nimi</label>
+      <input type="text" id="vastaanottajaNimi" placeholder="Etunimi Sukunimi">
+    </div>
+    <div class="field-row">
+      <label>Sähköposti</label>
+      <input type="email" id="vastaanottajaEmail" placeholder="tutkinto@example.fi">
+    </div>
+    <div class="field-row">
+      <label>Puhelinnumero</label>
+      <input type="text" id="vastaanottajaPuh" placeholder="+358 xx xxx xxxx">
+    </div>
+  </div>
+</div>
+
+<div style="height:14px"></div>
+
+<!-- Bottom action bar -->
+<div class="action-bar">
+  <button class="btn btn-reset" onclick="confirmReset()" title="Tyhjennä">🗑️</button>
+  <button class="btn btn-print" onclick="window.print()">🖨️ Tulosta</button>
+  <button class="btn btn-email" onclick="sendEmail()">✉️ Lähetä sähköposti</button>
+</div>
+
+<script>
+const sections = {
+  1: [
+    "Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.",
+    "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).",
+    "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.",
+    "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."
+  ],
+  2: [
+    "Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).",
+    "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).",
+    "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.",
+    "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."
+  ],
+  3: [
+    "Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).",
+    "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.",
+    "Liukuun nousu: Liukuun nousu on hallittu, ja veneen asento on vakaa.",
+    "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.",
+    "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen ilman, että peräaalto vyöryy takakannen yli.",
+    "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille).",
+    "Veneen kulkuasento: Moottoritrimmin säätö nopeuden mukaan (keulan nosto/lasku), sivuittaiskallistuman korjaaminen ja nousukynnyksen helpottaminen trimmitasoilla."
+  ],
+  4: [
+    "Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.",
+    "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.",
+    "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.",
+    "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.",
+    "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta)."
+  ],
+  5: [
+    "Paikanmääritys: Merkitty sijainti kartalle käyttäen merimerkkejä tai suuntimia.",
+    "Väistämissäännöt: Tunnistettu muut alukset ja toimittu kansainvälisten meriteiden sääntöjen mukaan hyvissä ajoin.",
+    "Lähestymissuunnitelma: Satamaan saavuttaessa kerrottu suunnitelman mukaiset syvyydet, merimerkit ja suuntimat ääneen."
+  ],
+  6: [
+    "Hälytys: Huudettu välittömästi \"Henkilö yli laidan!\" ja osoitettu tähystäjä.",
+    "Lähestyminen: Vene ohjattu uhrin tuulen alapuolelle / moottoriveneellä myös tuulen yläpuolelle ja lähestyminen ajelehtimalla.",
+    "Pysäytys: Vene pysähtynyt uhrin viereen niin, että hänet saadaan nostettua keskilaivasta.",
+    "Turvallisuus: Moottori laitettu vapaalle heti, kun uhri on veneen välittömässä läheisyydessä."
+  ]
+};
+
+// State
+const state = {};
+let paatos = '';
+
+function initState() {
+  for (const [sec, items] of Object.entries(sections)) {
+    state[sec] = new Array(items.length).fill(false);
+  }
+}
+
+function renderSection(secNum) {
+  const container = document.getElementById('sec' + secNum);
+  const items = sections[secNum];
+  container.innerHTML = '';
+  items.forEach((text, idx) => {
+    const checked = state[secNum][idx];
+    const div = document.createElement('div');
+    div.className = 'item' + (checked ? ' checked' : '');
+    div.innerHTML = `
+      <div class="checkbox">${checked ? '✓' : ''}</div>
+      <div class="item-text">${text}</div>
+    `;
+    div.addEventListener('click', () => toggle(secNum, idx));
+    container.appendChild(div);
+  });
+  updateCounter(secNum);
+  updateProgress();
+}
+
+function toggle(secNum, idx) {
+  state[secNum][idx] = !state[secNum][idx];
+  renderSection(secNum);
+  saveLocal();
+}
+
+function updateCounter(secNum) {
+  const arr = state[secNum];
+  const done = arr.filter(Boolean).length;
+  const total = arr.length;
+  document.getElementById('cnt' + secNum).textContent = `${done} / ${total} rastitettu`;
+}
+
+function updateProgress() {
+  let done = 0, total = 0;
+  for (const arr of Object.values(state)) {
+    done += arr.filter(Boolean).length;
+    total += arr.length;
+  }
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function setPaatos(val) {
+  paatos = val;
+  document.getElementById('btnHyvaksytty').className = 'paatos-btn' + (val === 'hyvaksytty' ? ' selected-hyvaksytty' : '');
+  document.getElementById('btnUusinta').className = 'paatos-btn' + (val === 'uusinta' ? ' selected-uusinta' : '');
+  saveLocal();
+}
+
+function getField(id) { return document.getElementById(id)?.value?.trim() || ''; }
+
+function buildEmailBody() {
+  const nimi = getField('kokelasNimi');
+  const paiva = getField('paiva');
+  const vesialue = getField('vesialue');
+  const tuuli = getField('tuuli');
+  const nakyvyys = getField('nakyvyys');
+  const alusNimi = getField('alusNimi');
+  const alustyyppi = getField('alustyyppi');
+  const syntymaika = getField('syntymaika');
+  const puhelin = getField('puhelin');
+  const osoite = getField('osoite');
+  const kokelasEmail = getField('kokelasEmail');
+  const rekisteri = getField('rekisteri');
+  const moottori = getField('moottori');
+  const vahvuudet = getField('vahvuudet');
+  const kehitettavaa = getField('kehitettavaa');
+  const vastaanottajaNimi = getField('vastaanottajaNimi');
+  const vastaanottajaEmail = getField('vastaanottajaEmail');
+  const vastaanottajaPuh = getField('vastaanottajaPuh');
+
+  const paatosText = paatos === 'hyvaksytty' ? 'HYVÄKSYTTY ✓' : paatos === 'uusinta' ? 'UUSINTA VAADITAAN' : '(ei merkitty)';
+
+  let body = `TARKISTUSLISTA JA TUTKINTORAPORTTI
+Veneilytaidon YTO:n vastaanottajalle
+=====================================
+
+KOKELAS
+Nimi: ${nimi}
+Syntymäaika: ${syntymaika}
+Osoite: ${osoite}
+Puhelin: ${puhelin}
+Sähköposti: ${kokelasEmail}
+
+ALUS
+Nimi: ${alusNimi}
+Rekisterinumero: ${rekisteri}
+Alustyyppi: ${alustyyppi}
+Moottoriteho: ${moottori}
+
+TUTKINTO-OLOSUHTEET
+Päivämäärä: ${paiva}
+Vesialue: ${vesialue}
+Tuuli: ${tuuli}
+Näkyvyys: ${nakyvyys}
+
+=====================================
+TARKISTUSLISTA
+=====================================
+
+`;
+
+  const secNames = {
+    1: '1. VALMISTELUT JA TURVALLISUUS',
+    2: '2. ALUKSEN KÄSITTELY',
+    3: '3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)',
+    4: '4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)',
+    5: '5. NAVIGOINTI JA TILANTEEN HALLINTA',
+    6: '6. HENKILÖ YLI LAIDAN (POB)'
+  };
+
+  for (const [secNum, items] of Object.entries(sections)) {
+    body += secNames[secNum] + '\n';
+    items.forEach((text, idx) => {
+      const mark = state[secNum][idx] ? '[X]' : '[ ]';
+      // Shorten text for email
+      const short = text.split(':')[0];
+      body += `  ${mark} ${short}\n`;
+    });
+    body += '\n';
+  }
+
+  body += `=====================================
+ARVIOINTI
+=====================================
+
+Vahvuudet:
+${vahvuudet || '-'}
+
+Kehitettävää:
+${kehitettavaa || '-'}
+
+PÄÄTÖS: ${paatosText}
+
+=====================================
+TUTKINNON VASTAANOTTAJA
+${vastaanottajaNimi}
+${vastaanottajaEmail}
+${vastaanottajaPuh}
+=====================================
+
+Lähetetty PORY Tutkintoraportti-sovelluksesta.
+`;
+  return body;
+}
+
+function sendEmail() {
+  const nimi = getField('kokelasNimi') || 'Kokelas';
+  const paiva = getField('paiva') || '';
+  const subject = encodeURIComponent(`Tutkintoraportti – ${nimi}${paiva ? ' – ' + paiva : ''}`);
+  const body = encodeURIComponent(buildEmailBody());
+  const to = 'info@navigoinninopettajat.fi';
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+}
+
+function confirmReset() {
+  if (confirm('Tyhjennä kaikki tiedot? Tätä ei voi peruuttaa.')) {
+    resetAll();
+  }
+}
+
+function resetAll() {
+  initState();
+  for (const secNum of Object.keys(sections)) {
+    renderSection(parseInt(secNum));
+  }
+  paatos = '';
+  document.getElementById('btnHyvaksytty').className = 'paatos-btn';
+  document.getElementById('btnUusinta').className = 'paatos-btn';
+  // Clear text fields
+  ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail',
+   'alusNimi','rekisteri','alustyyppi','moottori',
+   'paiva','vesialue','tuuli','nakyvyys',
+   'vahvuudet','kehitettavaa',
+   'vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  saveLocal();
+}
+
+function saveLocal() {
+  try {
+    const data = {
+      state,
+      paatos,
+      fields: {}
+    };
+    ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail',
+     'alusNimi','rekisteri','alustyyppi','moottori',
+     'paiva','vesialue','tuuli','nakyvyys',
+     'vahvuudet','kehitettavaa',
+     'vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data.fields[id] = el.value;
+    });
+    localStorage.setItem('tutkintoraportti', JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem('tutkintoraportti');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.state) {
+      for (const [sec, arr] of Object.entries(data.state)) {
+        if (state[sec]) state[sec] = arr;
+      }
+    }
+    if (data.paatos) setPaatos(data.paatos);
+    if (data.fields) {
+      for (const [id, val] of Object.entries(data.fields)) {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+      }
+    }
+  } catch(e) {}
+}
+
+// Auto-save on field change
+document.querySelectorAll('input, textarea').forEach(el => {
+  el.addEventListener('input', saveLocal);
+});
+
+// Init
+initState();
+loadLocal();
+for (const secNum of Object.keys(sections)) {
+  renderSection(parseInt(secNum));
+}
+</script>
+</body>
+</html>
