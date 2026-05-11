@@ -7,324 +7,295 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tutkintoraportti">
-<title>SNOP – Tutkintoraportti v2</title>
+<title>SNOP Tutkintoraportti - s/y Quartet</title>
 <style>
- :root {
- --blue: #0a4272;
- --gold: #92400e;
- --light: #e8f0f7;
- --border: #c5d5e8;
- --checked-bg: #d4edda;
- --checked-border: #28a745;
- --text: #1a2a3a;
- --muted: #6c7a8a;
- --radius: 10px;
- --shadow: 0 2px 8px rgba(10,66,114,0.10);
- }
- * { box-sizing: border-box; margin: 0; padding: 0; }
- html { height: 100%; overflow: hidden; position: fixed; width: 100%; }
- body { height: 100%; width: 100%; overflow: hidden; position: fixed; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f4f8; color: var(--text); }
- .scroll-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 20px; }
- header { background: var(--blue); color: white; padding: 14px 16px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
- header h1 { font-size: 1.05rem; font-weight: 700; }
- header p { font-size: 0.76rem; opacity: 0.8; margin-top: 2px; }
- .progress-bar { background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; }
- .progress-fill { height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s ease; }
- .section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
- .section-header { background: var(--blue); color: white; padding: 9px 14px; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
- .section-note { background: var(--light); border-left: 3px solid var(--blue); font-size: 0.77rem; color: var(--muted); padding: 7px 14px; line-height: 1.4; font-style: italic; }
- .item { display: flex; align-items: flex-start; padding: 12px 14px; border-bottom: 1px solid #eef2f7; gap: 12px; cursor: pointer; transition: background 0.15s; user-select: none; }
- .item:last-child { border-bottom: none; }
- .item.checked { background: var(--checked-bg); }
- .checkbox { flex-shrink: 0; width: 28px; height: 28px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s; margin-top: 1px; background: white; }
- .item.checked .checkbox { background: var(--checked-border); border-color: var(--checked-border); color: white; }
- .item-text { flex: 1; font-size: 0.87rem; line-height: 1.45; color: var(--text); }
- .item.checked .item-text { color: #256d3b; }
- .fields-section, .arviointi-section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
- .field-group { padding: 0 14px 12px; }
- .field-group + .field-group { border-top: 1px solid #eef2f7; padding-top: 12px; }
- .field-group-title { font-size: 0.71rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; padding: 11px 0 7px; }
- .field-row { margin-bottom: 9px; }
- label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 3px; font-weight: 600; }
- input[type="text"], input[type="email"], input[type="date"], textarea, select { width: 100%; border: 1.5px solid var(--border); border-radius: 7px; padding: 10px 11px; font-size: 16px; font-family: inherit; color: var(--text); background: #fafcff; transition: border-color 0.15s; outline: none; }
- input:focus, textarea:focus { border-color: var(--blue); background: white; }
- textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
- .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; cursor: pointer; }
- .checkbox-input { width: 24px; height: 24px; cursor: pointer; accent-color: var(--blue); }
- .checkbox-label { font-size: 0.87rem; color: var(--text); cursor: pointer; }
- .paatos-row { display: flex; gap: 10px; padding: 10px 14px 14px; }
- .paatos-btn { flex: 1; padding: 12px 8px; border-radius: 8px; border: 2px solid var(--border); font-size: 0.9rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; background: white; color: var(--text); }
- .paatos-btn.selected-hyvaksytty { background: #28a745; border-color: #28a745; color: white; }
- .paatos-btn.selected-uusinta { background: #dc3545; border-color: #dc3545; color: white; }
- .action-bar { margin: 12px 12px 0; background: white; border-radius: var(--radius); padding: 10px 12px; display: flex; gap: 10px; box-shadow: var(--shadow); }
- .btn { flex: 1; padding: 13px 10px; border-radius: 9px; border: none; font-family: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; }
- .btn-reset { background: #f0f4f8; color: var(--muted); border: 1.5px solid var(--border); flex: 0 0 auto; width: 52px; padding: 13px 0; font-size: 1rem; }
- .btn-print { background: var(--blue); color: white; }
- .btn-email { background: var(--gold); color: white; }
- .btn-save { background: #28a745; color: white; }
- .btn:active { opacity: 0.82; }
- .counter { font-size: 0.71rem; color: var(--muted); padding: 5px 14px 8px; border-top: 1px solid #eef2f7; text-align: right; }
- .gps-btn { width: 100%; padding: 11px 14px; margin: 6px 0 10px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; }
- .gps-btn:disabled { opacity: 0.5; }
- .gps-status { font-size: 0.77rem; color: var(--muted); padding: 0 0 6px; min-height: 18px; text-align: center; }
- .gps-status.error { color: #dc3545; }
- .gps-status.ok { color: #28a745; }
- .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
- .modal.show { display: flex; align-items: flex-end; }
- .modal-content { background: white; border-radius: 16px 16px 0 0; padding: 20px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -2px 8px rgba(0,0,0,0.2); }
- .modal-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--blue); }
- .modal-field { margin-bottom: 12px; }
- .modal-field-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
- .modal-field-value { font-size: 0.9rem; color: var(--text); margin-top: 3px; word-break: break-word; }
- .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
- .modal-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
- .modal-btn-confirm { background: #28a745; color: white; }
- .modal-btn-cancel { background: #f0f4f8; color: var(--muted); border: 1.5px solid var(--border); }
- .status-message { position: fixed; bottom: 20px; left: 20px; right: 20px; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; display: none; z-index: 2000; }
- .status-message.show { display: block; animation: slideUp 0.3s ease; }
- .status-message.success { background: #28a745; color: white; }
- .status-message.error { background: #dc3545; color: white; }
- .status-message.info { background: #0a4272; color: white; }
- @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
- @media print { html, body { height: auto; overflow: visible; position: static; } .scroll-wrap { position: static; overflow: visible; } .action-bar { display: none; } header { background: none; color: black; box-shadow: none; border-bottom: 2px solid black; } }
+:root { --blue: #0a4272; --gold: #92400e; --light: #e8f0f7; --border: #c5d5e8; --checked-bg: #d4edda; --checked-border: #28a745; --text: #1a2a3a; --muted: #6c7a8a; --radius: 10px; --shadow: 0 2px 8px rgba(10,66,114,0.10); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; overflow: hidden; position: fixed; width: 100%; }
+body { height: 100%; width: 100%; overflow: hidden; position: fixed; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f4f8; color: var(--text); }
+.scroll-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 20px; }
+header { background: var(--blue); color: white; padding: 14px 16px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+header h1 { font-size: 1.05rem; font-weight: 700; }
+header p { font-size: 0.76rem; opacity: 0.8; margin-top: 2px; }
+.progress-bar { background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.progress-fill { height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s ease; }
+.section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.section-header { background: var(--blue); color: white; padding: 9px 14px; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.section-note { background: var(--light); border-left: 3px solid var(--blue); font-size: 0.77rem; color: var(--muted); padding: 7px 14px; line-height: 1.4; font-style: italic; }
+.item { display: flex; align-items: flex-start; padding: 12px 14px; border-bottom: 1px solid #eef2f7; gap: 12px; cursor: pointer; transition: background 0.15s; user-select: none; }
+.item:last-child { border-bottom: none; }
+.item.checked { background: var(--checked-bg); }
+.checkbox { flex-shrink: 0; width: 28px; height: 28px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s; margin-top: 1px; background: white; }
+.item.checked .checkbox { background: var(--checked-border); border-color: var(--checked-border); color: white; }
+.item-text { flex: 1; font-size: 0.87rem; line-height: 1.45; color: var(--text); }
+.item.checked .item-text { color: #256d3b; }
+.fields-section, .arviointi-section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.field-group { padding: 0 14px 12px; }
+.field-group + .field-group { border-top: 1px solid #eef2f7; padding-top: 12px; }
+.field-group-title { font-size: 0.71rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; padding: 11px 0 7px; }
+.field-row { margin-bottom: 9px; }
+label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 3px; font-weight: 600; }
+input[type="text"], input[type="email"], input[type="date"], textarea, select { width: 100%; border: 1.5px solid var(--border); border-radius: 7px; padding: 10px 11px; font-size: 16px; font-family: inherit; color: var(--text); background: #fafcff; transition: border-color 0.15s; outline: none; }
+input:focus, textarea:focus { border-color: var(--blue); background: white; }
+textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
+.checkbox-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; cursor: pointer; }
+.checkbox-input { width: 24px; height: 24px; cursor: pointer; accent-color: var(--blue); }
+.checkbox-label { font-size: 0.87rem; color: var(--text); cursor: pointer; }
+.paatos-row { display: flex; gap: 10px; padding: 10px 14px 14px; }
+.paatos-btn { flex: 1; padding: 12px 8px; border-radius: 8px; border: 2px solid var(--border); font-size: 0.9rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; background: white; color: var(--text); }
+.paatos-btn.selected-hyvaksytty { background: #28a745; border-color: #28a745; color: white; }
+.paatos-btn.selected-uusinta { background: #dc3545; border-color: #dc3545; color: white; }
+.action-bar { margin: 12px 12px 0; background: white; border-radius: var(--radius); padding: 10px 12px; display: flex; gap: 10px; box-shadow: var(--shadow); }
+.btn { flex: 1; padding: 13px 10px; border-radius: 9px; border: none; font-family: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; }
+.btn-reset { background: #f0f4f8; color: var(--muted); border: 1.5px solid var(--border); flex: 0 0 auto; width: 52px; padding: 13px 0; font-size: 1rem; }
+.btn-print { background: var(--blue); color: white; }
+.btn-email { background: var(--gold); color: white; }
+.btn-save { background: #28a745; color: white; }
+.btn:active { opacity: 0.82; }
+.counter { font-size: 0.71rem; color: var(--muted); padding: 5px 14px 8px; border-top: 1px solid #eef2f7; text-align: right; }
+.gps-btn { width: 100%; padding: 11px 14px; margin: 6px 0 10px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; }
+.gps-btn:disabled { opacity: 0.5; }
+.gps-status { font-size: 0.77rem; color: var(--muted); padding: 0 0 6px; min-height: 18px; text-align: center; }
+.gps-status.error { color: #dc3545; }
+.gps-status.ok { color: #28a745; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+.modal.show { display: flex; align-items: flex-end; }
+.modal-content { background: white; border-radius: 16px 16px 0 0; padding: 20px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -2px 8px rgba(0,0,0,0.2); }
+.modal-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--blue); }
+.modal-field { margin-bottom: 12px; }
+.modal-field-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.modal-field-value { font-size: 0.9rem; color: var(--text); margin-top: 3px; word-break: break-word; }
+.modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+.modal-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+.modal-btn-confirm { background: #28a745; color: white; }
+.modal-btn-cancel { background: #f0f4f8; color: var(--muted); border: 1.5px solid var(--border); }
+.status-message { position: fixed; bottom: 20px; left: 20px; right: 20px; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; display: none; z-index: 2000; }
+.status-message.show { display: block; animation: slideUp 0.3s ease; }
+.status-message.success { background: #28a745; color: white; }
+.status-message.error { background: #dc3545; color: white; }
+.status-message.info { background: #0a4272; color: white; }
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@media print { html, body { height: auto; overflow: visible; position: static; } .scroll-wrap { position: static; overflow: visible; } .action-bar { display: none; } header { background: none; color: black; box-shadow: none; border-bottom: 2px solid black; } }
 </style>
 </head>
 <body>
 <div class="scroll-wrap" id="scrollWrap">
 <header>
- <h1>Tutkintoraportti – SNOP v2</h1>
- <p>Tarkistuslista ja tutkintoraportti / Veneilytaidon YTO:n vastaanottajalle</p>
- <div class="progress-bar">
- <div class="progress-fill" id="progressFill" style="width:0%"></div>
- </div>
+<h1>Tutkintoraportti – SNOP</h1>
+<p>s/y Quartet | Tarkistuslista ja tutkintoraportti</p>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill" style="width:0%"></div>
+</div>
 </header>
 
-<!-- KOKELAS JA ALUS -->
-
 <div class="fields-section">
- <div class="section-header">KOKELAAN JA ALUKSEN TIEDOT</div>
- <div class="field-group">
- <div class="field-group-title">Kokelas</div>
- <div class="field-row">
- <label>Nimi</label>
- <input type="text" id="kokelasNimi" placeholder="Etunimi Sukunimi">
- </div>
- <div class="field-row">
- <label>Syntymäaika</label>
- <input type="text" id="syntymaika" placeholder="pp.kk.vvvv" inputmode="numeric">
- </div>
- <div class="field-row">
- <label>Osoite</label>
- <input type="text" id="osoite" placeholder="Katuosoite numerot, postinumero kaupunki">
- </div>
- <div class="field-row">
- <label>Puhelinnumero</label>
- <input type="text" id="puhelin" placeholder="+358 xx xxx xxxx" inputmode="tel">
- </div>
- <div class="field-row">
- <label>Sähköposti</label>
- <input type="email" id="kokelasEmail" placeholder="etunimi.sukunimi@email.fi">
- </div>
- </div>
- <div class="field-group">
- <div class="field-group-title">Alus</div>
- <div class="field-row">
- <label>Aluksen nimi</label>
- <input type="text" id="alusNimi" placeholder="s/y tai m/s ..." value="s/y Quartet">
- </div>
- <div class="field-row">
- <label>Rekisterinumero</label>
- <input type="text" id="rekisteri" placeholder="Rekisterinumero" value="X16406">
- </div>
- <div class="field-row">
- <label>Alustyyppi</label>
- <input type="text" id="alustyyppi" placeholder="esim. Absolut 37, purjevene" value="Absolut 37">
- </div>
- <div class="field-row">
- <label>Moottoriteho</label>
- <input type="text" id="moottori" placeholder="esim. 30 hv / Volvo D1-30" value="28 hv">
- </div>
- </div>
- <div class="field-group">
- <div class="field-group-title">Tutkinto-olosuhteet</div>
- <div class="field-row">
- <label>Päivämäärä</label>
- <input type="date" id="paiva">
- </div>
- <button class="gps-btn" id="gpsBtn" onclick="fetchWeather()">📍 Hae sijainti &amp; tuulitiedot GPS:llä</button>
- <div id="gpsStatus" class="gps-status"></div>
- <div class="field-row">
- <label>Vesialue / sijainti</label>
- <input type="text" id="vesialue" placeholder="esim. Helsingin edustan saaristo">
- </div>
- <div class="field-row">
- <label>Tuuli</label>
- <input type="text" id="tuuli" placeholder="esim. SW 5–8 m/s">
- </div>
- <div class="field-row">
- <label>Näkyvyys</label>
- <input type="text" id="nakyvyys" placeholder="esim. Hyvä, >5 km">
- </div>
- </div>
-
- <!-- VALINNAT - ICC -->
-
- <div class="field-group">
- <div class="field-group-title">ICC (Kansainvälinen huviveneenkuljettajankirja)</div>
- <div class="checkbox-row">
- <input type="checkbox" id="iccM" class="checkbox-input">
- <label for="iccM" class="checkbox-label">M - Moottorialukselle</label>
- </div>
- <div class="checkbox-row">
- <input type="checkbox" id="iccS" class="checkbox-input">
- <label for="iccS" class="checkbox-label">S - Purjealukselle</label>
- </div>
- </div>
-
- <!-- VALINNAT - VUOKRAVENE -->
-
- <div class="field-group">
- <div class="field-group-title">Vuokravene</div>
- <div class="checkbox-row">
- <input type="checkbox" id="vuokraveneM" class="checkbox-input">
- <label for="vuokraveneM" class="checkbox-label">M - Moottorialukselle</label>
- </div>
- <div class="checkbox-row">
- <input type="checkbox" id="vuokraveneS" class="checkbox-input">
- <label for="vuokraveneS" class="checkbox-label">S - Purjealukselle</label>
- </div>
- </div>
+<div class="section-header">KOKELAAN JA ALUKSEN TIEDOT</div>
+<div class="field-group">
+<div class="field-group-title">Kokelas</div>
+<div class="field-row">
+<label>Nimi</label>
+<input type="text" id="kokelasNimi" placeholder="Etunimi Sukunimi">
+</div>
+<div class="field-row">
+<label>Syntymäaika</label>
+<input type="text" id="syntymaika" placeholder="pp.kk.vvvv" inputmode="numeric">
+</div>
+<div class="field-row">
+<label>Osoite</label>
+<input type="text" id="osoite" placeholder="Katuosoite numerot, postinumero kaupunki">
+</div>
+<div class="field-row">
+<label>Puhelinnumero</label>
+<input type="text" id="puhelin" placeholder="+358 xx xxx xxxx" inputmode="tel">
+</div>
+<div class="field-row">
+<label>Sähköposti</label>
+<input type="email" id="kokelasEmail" placeholder="etunimi.sukunimi@email.fi">
+</div>
+</div>
+<div class="field-group">
+<div class="field-group-title">Alus - s/y Quartet</div>
+<div class="field-row">
+<label>Aluksen nimi</label>
+<input type="text" id="alusNimi" value="s/y Quartet">
+</div>
+<div class="field-row">
+<label>Rekisterinumero</label>
+<input type="text" id="rekisteri" value="X16406">
+</div>
+<div class="field-row">
+<label>Alustyyppi</label>
+<input type="text" id="alustyyppi" value="Absolut 37">
+</div>
+<div class="field-row">
+<label>Moottoriteho</label>
+<input type="text" id="moottori" value="28 hv">
+</div>
+</div>
+<div class="field-group">
+<div class="field-group-title">Tutkinto-olosuhteet</div>
+<div class="field-row">
+<label>Päivämäärä</label>
+<input type="date" id="paiva">
+</div>
+<button class="gps-btn" id="gpsBtn" onclick="fetchWeather()">📍 Hae sijainti &amp; tuulitiedot GPS:llä</button>
+<div id="gpsStatus" class="gps-status"></div>
+<div class="field-row">
+<label>Vesialue / sijainti</label>
+<input type="text" id="vesialue" placeholder="esim. Helsingin edustan saaristo">
+</div>
+<div class="field-row">
+<label>Tuuli</label>
+<input type="text" id="tuuli" placeholder="esim. SW 5–8 m/s">
+</div>
+<div class="field-row">
+<label>Näkyvyys</label>
+<input type="text" id="nakyvyys" placeholder="esim. Hyvä, >5 km">
+</div>
 </div>
 
-<!-- TEHTÄVÄT -->
+<div class="field-group">
+<div class="field-group-title">ICC (Kansainvälinen huviveneenkuljettajankirja)</div>
+<div class="checkbox-row">
+<input type="checkbox" id="iccM" class="checkbox-input">
+<label for="iccM" class="checkbox-label">M - Moottorialukselle</label>
+</div>
+<div class="checkbox-row">
+<input type="checkbox" id="iccS" class="checkbox-input">
+<label for="iccS" class="checkbox-label">S - Purjealukselle</label>
+</div>
+</div>
 
-<div class="section">
- <div class="section-note">Rastita tutkinnossa käydyt tehtävät. Kaikissa tehtävissä arvioidaan kokelaan kykyä johtaa miehistöä (viestinnän selkeys, oikeaaikaisuus ja rauhallisuus).</div>
+<div class="field-group">
+<div class="field-group-title">Vuokravene</div>
+<div class="checkbox-row">
+<input type="checkbox" id="vuokraveneM" class="checkbox-input">
+<label for="vuokraveneM" class="checkbox-label">M - Moottorialukselle</label>
+</div>
+<div class="checkbox-row">
+<input type="checkbox" id="vuokraveneS" class="checkbox-input">
+<label for="vuokraveneS" class="checkbox-label">S - Purjealukselle</label>
+</div>
+</div>
 </div>
 
 <div class="section">
- <div class="section-header">1. VALMISTELUT JA TURVALLISUUS</div>
- <div id="sec1"></div>
- <div class="counter" id="cnt1"></div>
+<div class="section-note">Rastita tutkinnossa käydyt tehtävät. Kaikissa tehtävissä arvioidaan kokelaan kykyä johtaa miehistöä (viestinnän selkeys, oikeaaikaisuus ja rauhallisuus).</div>
 </div>
 
 <div class="section">
- <div class="section-header">2. ALUKSEN KÄSITTELY</div>
- <div id="sec2"></div>
- <div class="counter" id="cnt2"></div>
+<div class="section-header">1. VALMISTELUT JA TURVALLISUUS</div>
+<div id="sec1"></div>
+<div class="counter" id="cnt1"></div>
 </div>
 
 <div class="section">
- <div class="section-header">3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)</div>
- <div class="section-note">Täytä vain moottorivenetutkinnossa</div>
- <div id="sec3"></div>
- <div class="counter" id="cnt3"></div>
+<div class="section-header">2. ALUKSEN KÄSITTELY</div>
+<div id="sec2"></div>
+<div class="counter" id="cnt2"></div>
 </div>
 
 <div class="section">
- <div class="section-header">4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)</div>
- <div class="section-note">Täytä vain purjevenetutkinnossa</div>
- <div id="sec4"></div>
- <div class="counter" id="cnt4"></div>
+<div class="section-header">3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)</div>
+<div class="section-note">Täytä vain moottorivenetutkinnossa</div>
+<div id="sec3"></div>
+<div class="counter" id="cnt3"></div>
 </div>
 
 <div class="section">
- <div class="section-header">5. NAVIGOINTI JA TILANTEEN HALLINTA</div>
- <div id="sec5"></div>
- <div class="counter" id="cnt5"></div>
+<div class="section-header">4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)</div>
+<div class="section-note">Täytä vain purjevenetutkinnossa</div>
+<div id="sec4"></div>
+<div class="counter" id="cnt4"></div>
 </div>
 
 <div class="section">
- <div class="section-header">6. HENKILÖ YLI LAIDAN (POB) – Tehdään aina</div>
- <div id="sec6"></div>
- <div class="counter" id="cnt6"></div>
+<div class="section-header">5. NAVIGOINTI JA TILANTEEN HALLINTA</div>
+<div id="sec5"></div>
+<div class="counter" id="cnt5"></div>
 </div>
 
-<!-- ARVIOINTI -->
+<div class="section">
+<div class="section-header">6. HENKILÖ YLI LAIDAN (POB) – Tehdään aina</div>
+<div id="sec6"></div>
+<div class="counter" id="cnt6"></div>
+</div>
 
 <div class="arviointi-section">
- <div class="section-header">ARVIOINTI</div>
- <div class="field-group">
- <div class="field-group-title">Vahvuudet</div>
- <textarea id="vahvuudet" placeholder="Kokelaan vahvuudet tutkintosuorituksessa..."></textarea>
- </div>
- <div class="field-group">
- <div class="field-group-title">Kehitettävää</div>
- <textarea id="kehitettavaa" placeholder="Kehittämistä vaativat osaalueet..."></textarea>
- </div>
- <div class="field-group">
- <div class="field-group-title">Päätös</div>
- <div class="paatos-row">
- <button class="paatos-btn" id="btnHyvaksytty" onclick="setPaatos('hyvaksytty')">✓ Hyväksytty</button>
- <button class="paatos-btn" id="btnUusinta" onclick="setPaatos('uusinta')">⟲ Uusinta vaaditaan</button>
- </div>
- </div>
- <div class="field-group">
- <div class="field-group-title">Tutkinnon vastaanottaja</div>
- <div class="field-row">
- <label>Nimi</label>
- <input type="text" id="vastaanottajaNimi" value="Jarmo Aaltonen">
- </div>
- <div class="field-row">
- <label>Sähköposti</label>
- <input type="email" id="vastaanottajaEmail" value="jacke.seilaa@gmail.com">
- </div>
- <div class="field-row">
- <label>Puhelinnumero</label>
- <input type="text" id="vastaanottajaPuh" value="+358 44 3808569">
- </div>
- </div>
+<div class="section-header">ARVIOINTI</div>
+<div class="field-group">
+<div class="field-group-title">Vahvuudet</div>
+<textarea id="vahvuudet" placeholder="Kokelaan vahvuudet tutkintosuorituksessa..."></textarea>
 </div>
-
-<!-- NAPIT -->
+<div class="field-group">
+<div class="field-group-title">Kehitettävää</div>
+<textarea id="kehitettavaa" placeholder="Kehittämistä vaativat osaalueet..."></textarea>
+</div>
+<div class="field-group">
+<div class="field-group-title">Päätös</div>
+<div class="paatos-row">
+<button class="paatos-btn" id="btnHyvaksytty" onclick="setPaatos('hyvaksytty')">✓ Hyväksytty</button>
+<button class="paatos-btn" id="btnUusinta" onclick="setPaatos('uusinta')">⟲ Uusinta vaaditaan</button>
+</div>
+</div>
+<div class="field-group">
+<div class="field-group-title">Tutkinnon vastaanottaja</div>
+<div class="field-row">
+<label>Nimi</label>
+<input type="text" id="vastaanottajaNimi" value="Jarmo Aaltonen">
+</div>
+<div class="field-row">
+<label>Sähköposti</label>
+<input type="email" id="vastaanottajaEmail" value="jacke.seilaa@gmail.com">
+</div>
+<div class="field-row">
+<label>Puhelinnumero</label>
+<input type="text" id="vastaanottajaPuh" value="+358 44 3808569">
+</div>
+</div>
+</div>
 
 <div class="action-bar">
- <button class="btn btn-reset" onclick="confirmReset()" title="Seuraava kokelas">➕</button>
- <button class="btn btn-print" onclick="window.print()">🖨️ Tulosta</button>
- <button class="btn btn-save" onclick="showPreview()">💾 Tallenna</button>
- <button class="btn btn-email" onclick="sendEmail()">📧 Lähetä</button>
+<button class="btn btn-reset" onclick="confirmReset()" title="Seuraava kokelas">➕</button>
+<button class="btn btn-print" onclick="window.print()">🖨️ Tulosta</button>
+<button class="btn btn-save" onclick="showPreview()">💾 Tallenna</button>
+<button class="btn btn-email" onclick="sendEmail()">📧 Lähetä</button>
 </div>
 </div>
-
-<!-- ESIKATSELU MODAL -->
 
 <div id="previewModal" class="modal">
- <div class="modal-content">
- <div class="modal-header">Esikatselu – Tarkista ennen tallentamista</div>
- <div id="previewContent"></div>
- <div class="modal-buttons">
- <button class="modal-btn modal-btn-confirm" onclick="confirmSaveData()">✓ Tallenna & Kopioi Sheets</button>
- <button class="modal-btn modal-btn-cancel" onclick="closePreview()">Peruuta</button>
- </div>
- </div>
+<div class="modal-content">
+<div class="modal-header">Esikatselu – Tarkista ennen tallentamista</div>
+<div id="previewContent"></div>
+<div class="modal-buttons">
+<button class="modal-btn modal-btn-confirm" onclick="confirmSaveData()">✓ Tallenna & Kopioi Sheets</button>
+<button class="modal-btn modal-btn-cancel" onclick="closePreview()">Peruuta</button>
 </div>
-
-<!-- KOPIOI MODAL -->
+</div>
+</div>
 
 <div id="copyModal" class="modal">
- <div class="modal-content">
- <div class="modal-header">📋 Kopioi Google Sheetsiin</div>
- <p style="font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);">Klikkaa alla olevaa painiketta ja valitse kaikki teksti.</p>
- <textarea id="copyArea" readonly style="width: 100%; height: 150px; font-size: 0.75rem; font-family: monospace; padding: 12px; border: 1.5px solid var(--border); border-radius: 7px; background: #fafcff;"></textarea>
- <div class="modal-buttons" style="margin-top: 20px;">
- <button class="modal-btn modal-btn-confirm" onclick="copyToClipboard()">📋 Kopioi leikepöydälle</button>
- <button class="modal-btn modal-btn-cancel" onclick="closeCopyModal()">Valmis</button>
- </div>
- </div>
+<div class="modal-content">
+<div class="modal-header">📋 Kopioi Google Sheetsiin</div>
+<p style="font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);">Klikkaa painiketta ja liitä Google Sheetsiin.</p>
+<textarea id="copyArea" readonly style="width: 100%; height: 150px; font-size: 0.75rem; font-family: monospace; padding: 12px; border: 1.5px solid var(--border); border-radius: 7px; background: #fafcff;"></textarea>
+<div class="modal-buttons" style="margin-top: 20px;">
+<button class="modal-btn modal-btn-confirm" onclick="copyToClipboard()">📋 Kopioi leikepöydälle</button>
+<button class="modal-btn modal-btn-cancel" onclick="closeCopyModal()">Valmis</button>
 </div>
-
-<!-- STATUS -->
+</div>
+</div>
 
 <div id="statusMessage" class="status-message"></div>
 
 <script>
 const sections = {
- 1: ["Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.", "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).", "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.", "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."],
- 2: ["Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).", "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).", "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.", "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."],
- 3: ["Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).", "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.", "Liukuun nousu: Liukuun nousu on hallittu, ja veneen asento on vakaa.", "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.", "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen ilman, että peräaalto vyöryy takakannen yli.", "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille).", "Veneen kulkuasento: Moottoritrimmin säätö nopeuden mukaan (keulan nosto/lasku), sivuittaiskallistuman korjaaminen ja nousukynnyksen helpottaminen trimmitasoilla."],
- 4: ["Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.", "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.", "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.", "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.", "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta)."],
- 5: ["Paikanmääritys: Merkitty sijainti kartalle käyttäen merimerkkejä tai suuntimia.", "Väistämissäännöt: Tunnistettu muut alukset ja toimittu kansainvälisten meriteiden sääntöjen mukaan hyvissä ajoin.", "Lähestymissuunnitelma: Satamaan saavuttaessa kerrottu suunnitelman mukaiset syvyydet, merimerkit ja suuntimat ääneen."],
- 6: ["Hälytys: Huudettu välittömästi \"Henkilö yli laidan!\" ja osoitettu tähystäjä.", "Lähestyminen: Vene ohjattu uhrin tuulen alapuolelle / moottoriveneellä myös tuulen yläpuolelle ja lähestyminen ajelehtimalla.", "Pysäytys: Vene pysähtynyt uhrin viereen niin, että hänet saadaan nostettua keskilaivasta.", "Turvallisuus: Moottori laitettu vapaalle heti, kun uhri on veneen välittömässä läheisyydessä."]
+1: ["Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.", "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).", "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.", "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."],
+2: ["Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).", "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).", "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.", "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."],
+3: ["Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).", "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.", "Liukuun nousu: Liukuun nousu on hallittu, ja veneen asento on vakaa.", "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.", "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen ilman, että peräaalto vyöryy takakannen yli.", "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille).", "Veneen kulkuasento: Moottoritrimmin säätö nopeuden mukaan (keulan nosto/lasku), sivuittaiskallistuman korjaaminen ja nousukynnyksen helpottaminen trimmitasoilla."],
+4: ["Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.", "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.", "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.", "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.", "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta)."],
+5: ["Paikanmääritys: Merkitty sijainti kartalle käyttäen merimerkkejä tai suuntimia.", "Väistämissäännöt: Tunnistettu muut alukset ja toimittu kansainvälisten meriteiden sääntöjen mukaan hyvissä ajoin.", "Lähestymissuunnitelma: Satamaan saavuttaessa kerrottu suunnitelman mukaiset syvyydet, merimerkit ja suuntimat ääneen."],
+6: ["Hälytys: Huudettu välittömästi \"Henkilö yli laidan!\" ja osoitetty tähystäjä.", "Lähestyminen: Vene ohjattu uhrin tuulen alapuolelle / moottoriveneellä myös tuulen yläpuolelle ja lähestyminen ajelehtimalla.", "Pysäytys: Vene pysähtynyt uhrin viereen niin, että hänet saadaan nostettua keskilaivasta.", "Turvallisuus: Moottori laitettu vapaalle heti, kun uhri on veneen välittömässä läheisyydessä."]
 };
 
 const state = {};
@@ -332,216 +303,216 @@ let paatos = '';
 let savedData = [];
 
 function initState() {
- for (const [sec, items] of Object.entries(sections)) {
- state[sec] = new Array(items.length).fill(false);
- }
+for (const [sec, items] of Object.entries(sections)) {
+state[sec] = new Array(items.length).fill(false);
+}
 }
 
 function renderSection(secNum) {
- const container = document.getElementById('sec' + secNum);
- const items = sections[secNum];
- container.innerHTML = '';
- items.forEach((text, idx) => {
- const checked = state[secNum][idx];
- const div = document.createElement('div');
- div.className = 'item' + (checked ? ' checked' : '');
- div.innerHTML = `<div class="checkbox">${checked ? '✓' : ''}</div><div class="item-text">${text}</div>`;
- div.addEventListener('click', () => toggle(secNum, idx));
- container.appendChild(div);
- });
- updateCounter(secNum);
- updateProgress();
+const container = document.getElementById('sec' + secNum);
+const items = sections[secNum];
+container.innerHTML = '';
+items.forEach((text, idx) => {
+const checked = state[secNum][idx];
+const div = document.createElement('div');
+div.className = 'item' + (checked ? ' checked' : '');
+div.innerHTML = `<div class="checkbox">${checked ? '✓' : ''}</div><div class="item-text">${text}</div>`;
+div.addEventListener('click', () => toggle(secNum, idx));
+container.appendChild(div);
+});
+updateCounter(secNum);
+updateProgress();
 }
 
 function toggle(secNum, idx) {
- state[secNum][idx] = !state[secNum][idx];
- renderSection(secNum);
- saveLocal();
+state[secNum][idx] = !state[secNum][idx];
+renderSection(secNum);
+saveLocal();
 }
 
 function updateCounter(secNum) {
- const arr = state[secNum];
- const done = arr.filter(Boolean).length;
- const total = arr.length;
- document.getElementById('cnt' + secNum).textContent = `${done} / ${total} rastitettu`;
+const arr = state[secNum];
+const done = arr.filter(Boolean).length;
+const total = arr.length;
+document.getElementById('cnt' + secNum).textContent = `${done} / ${total} rastitettu`;
 }
 
 function updateProgress() {
- let done = 0, total = 0;
- for (const arr of Object.values(state)) {
- done += arr.filter(Boolean).length;
- total += arr.length;
- }
- const pct = total > 0 ? Math.round(done / total * 100) : 0;
- document.getElementById('progressFill').style.width = pct + '%';
+let done = 0, total = 0;
+for (const arr of Object.values(state)) {
+done += arr.filter(Boolean).length;
+total += arr.length;
+}
+const pct = total > 0 ? Math.round(done / total * 100) : 0;
+document.getElementById('progressFill').style.width = pct + '%';
 }
 
 function setPaatos(val) {
- paatos = val;
- document.getElementById('btnHyvaksytty').className = 'paatos-btn' + (val === 'hyvaksytty' ? ' selected-hyvaksytty' : '');
- document.getElementById('btnUusinta').className = 'paatos-btn' + (val === 'uusinta' ? ' selected-uusinta' : '');
- saveLocal();
+paatos = val;
+document.getElementById('btnHyvaksytty').className = 'paatos-btn' + (val === 'hyvaksytty' ? ' selected-hyvaksytty' : '');
+document.getElementById('btnUusinta').className = 'paatos-btn' + (val === 'uusinta' ? ' selected-uusinta' : '');
+saveLocal();
 }
 
 function getField(id) { return document.getElementById(id)?.value?.trim() || ''; }
 function getCheckbox(id) { return document.getElementById(id)?.checked || false; }
 
 function getICCValue() {
- const m = getCheckbox('iccM');
- const s = getCheckbox('iccS');
- if (m && s) return 'MS';
- if (m) return 'M';
- if (s) return 'S';
- return '';
+const m = getCheckbox('iccM');
+const s = getCheckbox('iccS');
+if (m && s) return 'MS';
+if (m) return 'M';
+if (s) return 'S';
+return '';
 }
 
 function getVuokraveneValue() {
- const m = getCheckbox('vuokraveneM');
- const s = getCheckbox('vuokraveneS');
- if (m && s) return 'MS';
- if (m) return 'M';
- if (s) return 'S';
- return '';
+const m = getCheckbox('vuokraveneM');
+const s = getCheckbox('vuokraveneS');
+if (m && s) return 'MS';
+if (m) return 'M';
+if (s) return 'S';
+return '';
 }
 
 function splitNimi(fullNimi) {
- const parts = fullNimi.trim().split(/\s+/);
- if (parts.length >= 2) {
- return [parts[0], parts.slice(1).join(' ')];
- }
- return [fullNimi, ''];
+const parts = fullNimi.trim().split(/\s+/);
+if (parts.length >= 2) {
+return [parts[0], parts.slice(1).join(' ')];
+}
+return [fullNimi, ''];
 }
 
 function splitOsoite(osoiteStr) {
- const parts = osoiteStr.trim().split(/[,\s]+/);
- if (parts.length >= 3) {
- let postIdx = -1;
- for (let i = 0; i < parts.length; i++) {
- if (/^\d{5}$/.test(parts[i])) {
- postIdx = i;
- break;
- }
- }
- if (postIdx > 0) {
- return [parts.slice(0, postIdx).join(' '), parts[postIdx], parts.slice(postIdx + 1).join(' ')];
- }
- }
- return [osoiteStr, '', ''];
+const parts = osoiteStr.trim().split(/[,\s]+/);
+if (parts.length >= 3) {
+let postIdx = -1;
+for (let i = 0; i < parts.length; i++) {
+if (/^\d{5}$/.test(parts[i])) {
+postIdx = i;
+break;
+}
+}
+if (postIdx > 0) {
+return [parts.slice(0, postIdx).join(' '), parts[postIdx], parts.slice(postIdx + 1).join(' ')];
+}
+}
+return [osoiteStr, '', ''];
 }
 
 function showPreview() {
- const kokelasNimi = getField('kokelasNimi');
- const syntymaika = getField('syntymaika');
- const osoite = getField('osoite');
- const kokelasEmail = getField('kokelasEmail');
- const vesialue = getField('vesialue');
- const paiva = getField('paiva');
- const icc = getICCValue() || '(ei valittu)';
- const vuokravene = getVuokraveneValue() || '(ei valittu)';
- const paatosText = paatos === 'hyvaksytty' ? '✓ HYVÄKSYTTY' : paatos === 'uusinta' ? '⟲ UUSINTA VAADITAAN' : '(ei merkitty)';
- 
- const [etunimi, sukunimi] = splitNimi(kokelasNimi);
- const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
- 
- let html = `
- <div class="modal-field"><div class="modal-field-label">ETUNIMI</div><div class="modal-field-value">${etunimi || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">SUKUNIMI</div><div class="modal-field-value">${sukunimi || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">SYNTYMÄAIKA</div><div class="modal-field-value">${syntymaika || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">KATUOSOITE</div><div class="modal-field-value">${katuosoite || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">POSTINUMERO</div><div class="modal-field-value">${postinumero || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">POSTITOIMIPAIKKA</div><div class="modal-field-value">${kaupunki || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">E-MAIL</div><div class="modal-field-value">${kokelasEmail || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">TUTKINTOPAIKKA</div><div class="modal-field-value">${vesialue || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">TARKASTAJA</div><div class="modal-field-value">${getField('vastaanottajaNimi') || '—'}</div></div>
- <div class="modal-field"><div class="modal-field-label">ICC</div><div class="modal-field-value">${icc}</div></div>
- <div class="modal-field"><div class="modal-field-label">VUOKRAVENE</div><div class="modal-field-value">${vuokravene}</div></div>
- <div class="modal-field"><div class="modal-field-label">TODISTUS</div><div class="modal-field-value">${paatosText}</div></div>
- <div class="modal-field"><div class="modal-field-label">TUTKINTO PVM</div><div class="modal-field-value">${paiva || '—'}</div></div>
- `;
- 
- document.getElementById('previewContent').innerHTML = html;
- document.getElementById('previewModal').classList.add('show');
+const kokelasNimi = getField('kokelasNimi');
+const syntymaika = getField('syntymaika');
+const osoite = getField('osoite');
+const kokelasEmail = getField('kokelasEmail');
+const vesialue = getField('vesialue');
+const paiva = getField('paiva');
+const icc = getICCValue() || '(ei valittu)';
+const vuokravene = getVuokraveneValue() || '(ei valittu)';
+const paatosText = paatos === 'hyvaksytty' ? '✓ HYVÄKSYTTY' : paatos === 'uusinta' ? '⟲ UUSINTA VAADITAAN' : '(ei merkitty)';
+
+const [etunimi, sukunimi] = splitNimi(kokelasNimi);
+const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
+
+let html = `
+<div class="modal-field"><div class="modal-field-label">ETUNIMI</div><div class="modal-field-value">${etunimi || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">SUKUNIMI</div><div class="modal-field-value">${sukunimi || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">SYNTYMÄAIKA</div><div class="modal-field-value">${syntymaika || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">KATUOSOITE</div><div class="modal-field-value">${katuosoite || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">POSTINUMERO</div><div class="modal-field-value">${postinumero || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">POSTITOIMIPAIKKA</div><div class="modal-field-value">${kaupunki || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">E-MAIL</div><div class="modal-field-value">${kokelasEmail || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">TUTKINTOPAIKKA</div><div class="modal-field-value">${vesialue || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">TARKASTAJA</div><div class="modal-field-value">${getField('vastaanottajaNimi') || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">ICC</div><div class="modal-field-value">${icc}</div></div>
+<div class="modal-field"><div class="modal-field-label">VUOKRAVENE</div><div class="modal-field-value">${vuokravene}</div></div>
+<div class="modal-field"><div class="modal-field-label">TODISTUS</div><div class="modal-field-value">${paatosText}</div></div>
+<div class="modal-field"><div class="modal-field-label">TUTKINTO PVM</div><div class="modal-field-value">${paiva || '—'}</div></div>
+`;
+
+document.getElementById('previewContent').innerHTML = html;
+document.getElementById('previewModal').classList.add('show');
 }
 
 function closePreview() {
- document.getElementById('previewModal').classList.remove('show');
+document.getElementById('previewModal').classList.remove('show');
 }
 
 function confirmSaveData() {
- closePreview();
- 
- const kokelasNimi = getField('kokelasNimi');
- const syntymaika = getField('syntymaika');
- const osoite = getField('osoite');
- const kokelasEmail = getField('kokelasEmail');
- const vesialue = getField('vesialue');
- const paiva = getField('paiva');
- const icc = getICCValue();
- const vuokravene = getVuokraveneValue();
- const paatosText = paatos === 'hyvaksytty' ? 'Hyväksytty' : paatos === 'uusinta' ? 'Uusinta vaaditaan' : '';
- 
- const [etunimi, sukunimi] = splitNimi(kokelasNimi);
- const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
- 
- const row = [etunimi, sukunimi, katuosoite, postinumero, kaupunki, syntymaika, kokelasEmail, vesialue, getField('vastaanottajaNimi'), icc, vuokravene, paatosText, paiva];
- 
- savedData.push(row);
- saveLocal();
- showCopyModal(row);
- 
- setTimeout(() => { resetCokelas(); }, 500);
+closePreview();
+
+const kokelasNimi = getField('kokelasNimi');
+const syntymaika = getField('syntymaika');
+const osoite = getField('osoite');
+const kokelasEmail = getField('kokelasEmail');
+const vesialue = getField('vesialue');
+const paiva = getField('paiva');
+const icc = getICCValue();
+const vuokravene = getVuokraveneValue();
+const paatosText = paatos === 'hyvaksytty' ? 'Hyväksytty' : paatos === 'uusinta' ? 'Uusinta vaaditaan' : '';
+
+const [etunimi, sukunimi] = splitNimi(kokelasNimi);
+const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
+
+const row = [etunimi, sukunimi, katuosoite, postinumero, kaupunki, syntymaika, kokelasEmail, vesialue, getField('vastaanottajaNimi'), icc, vuokravene, paatosText, paiva];
+
+savedData.push(row);
+saveLocal();
+showCopyModal(row);
+
+setTimeout(() => { resetCokelas(); }, 500);
 }
 
 function showCopyModal(row) {
- const tsv = row.join('\t');
- document.getElementById('copyArea').value = tsv;
- document.getElementById('copyModal').classList.add('show');
- showStatus('✓ Tallennettu paikallisesti! Kopioi nyt Google Sheetsiin.', 'success');
+const tsv = row.join('\t');
+document.getElementById('copyArea').value = tsv;
+document.getElementById('copyModal').classList.add('show');
+showStatus('✓ Tallennettu paikallisesti! Kopioi nyt Google Sheetsiin.', 'success');
 }
 
 function closeCopyModal() {
- document.getElementById('copyModal').classList.remove('show');
+document.getElementById('copyModal').classList.remove('show');
 }
 
 function copyToClipboard() {
- const textarea = document.getElementById('copyArea');
- textarea.select();
- document.execCommand('copy');
- showStatus('📋 Kopioitu leikepöydälle! Liitä Google Sheetsiin.', 'success');
+const textarea = document.getElementById('copyArea');
+textarea.select();
+document.execCommand('copy');
+showStatus('📋 Kopioitu leikepöydälle! Liitä Google Sheetsiin.', 'success');
 }
 
 function showStatus(message, type = 'info') {
- const el = document.getElementById('statusMessage');
- el.textContent = message;
- el.className = `status-message show ${type}`;
- setTimeout(() => { el.classList.remove('show'); }, 4000);
+const el = document.getElementById('statusMessage');
+el.textContent = message;
+el.className = `status-message show ${type}`;
+setTimeout(() => { el.classList.remove('show'); }, 4000);
 }
 
 function sendEmail() {
- const nimi = getField('kokelasNimi') || 'Kokelas';
- const paiva = getField('paiva') || '';
- const subject = encodeURIComponent(`Tutkintoraportti – ${nimi}${paiva ? ' – ' + paiva : ''}`);
- const body = encodeURIComponent(buildEmailBody());
- const to = 'info@navigoinninopettajat.fi';
- window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+const nimi = getField('kokelasNimi') || 'Kokelas';
+const paiva = getField('paiva') || '';
+const subject = encodeURIComponent(`Tutkintoraportti – ${nimi}${paiva ? ' – ' + paiva : ''}`);
+const body = encodeURIComponent(buildEmailBody());
+const to = 'info@navigoinninopettajat.fi';
+window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
 }
 
 function buildEmailBody() {
- const nimi = getField('kokelasNimi');
- const paiva = getField('paiva');
- const vesialue = getField('vesialue');
- const tuuli = getField('tuuli');
- const nakyvyys = getField('nakyvyys');
- const syntymaika = getField('syntymaika');
- const puhelin = getField('puhelin');
- const osoite = getField('osoite');
- const kokelasEmail = getField('kokelasEmail');
- const vahvuudet = getField('vahvuudet');
- const kehitettavaa = getField('kehitettavaa');
- const vastaanottajaNimi = getField('vastaanottajaNimi');
- const paatosText = paatos === 'hyvaksytty' ? 'HYVÄKSYTTY ✓' : paatos === 'uusinta' ? 'UUSINTA VAADITAAN' : '(ei merkitty)';
- 
- let body = `TARKISTUSLISTA JA TUTKINTORAPORTTI
+const nimi = getField('kokelasNimi');
+const paiva = getField('paiva');
+const vesialue = getField('vesialue');
+const tuuli = getField('tuuli');
+const nakyvyys = getField('nakyvyys');
+const syntymaika = getField('syntymaika');
+const puhelin = getField('puhelin');
+const osoite = getField('osoite');
+const kokelasEmail = getField('kokelasEmail');
+const vahvuudet = getField('vahvuudet');
+const kehitettavaa = getField('kehitettavaa');
+const vastaanottajaNimi = getField('vastaanottajaNimi');
+const paatosText = paatos === 'hyvaksytty' ? 'HYVÄKSYTTY ✓' : paatos === 'uusinta' ? 'UUSINTA VAADITAAN' : '(ei merkitty)';
+
+let body = `TARKISTUSLISTA JA TUTKINTORAPORTTI
 Veneilytaidon YTO:n vastaanottajalle
 =====================================
 KOKELAS
@@ -570,204 +541,206 @@ PÄÄTÖS: ${paatosText}
 
 Lähetetty SNOP Tutkintoraportti-sovelluksesta.
 `;
- return body;
+return body;
 }
 
 function confirmReset() {
- if (confirm('Seuraava kokelas?\n\nTyhjentää kokelaan ja aluksen tiedot sekä rastit ja arvioinnin.')) {
- resetCokelas();
- }
+if (confirm('Seuraava kokelas?\n\nTyhjentää kokelaan ja aluksen tiedot sekä rastit ja arvioinnin.')) {
+resetCokelas();
+}
 }
 
 function resetCokelas() {
- initState();
- for (const secNum of Object.keys(sections)) {
- renderSection(parseInt(secNum));
- }
- paatos = '';
- document.getElementById('btnHyvaksytty').className = 'paatos-btn';
- document.getElementById('btnUusinta').className = 'paatos-btn';
- ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','alusNimi','rekisteri','alustyyppi','moottori','vahvuudet','kehitettavaa'].forEach(id => {
- const el = document.getElementById(id);
- if (el) el.value = '';
- });
- document.getElementById('iccM').checked = false;
- document.getElementById('iccS').checked = false;
- document.getElementById('vuokraveneM').checked = false;
- document.getElementById('vuokraveneS').checked = false;
- document.getElementById('scrollWrap').scrollTo({ top: 0, behavior: 'smooth' });
- saveLocal();
+initState();
+for (const secNum of Object.keys(sections)) {
+renderSection(parseInt(secNum));
+}
+paatos = '';
+document.getElementById('btnHyvaksytty').className = 'paatos-btn';
+document.getElementById('btnUusinta').className = 'paatos-btn';
+['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','vahvuudet','kehitettavaa'].forEach(id => {
+const el = document.getElementById(id);
+if (el) el.value = '';
+});
+document.getElementById('iccM').checked = false;
+document.getElementById('iccS').checked = false;
+document.getElementById('vuokraveneM').checked = false;
+document.getElementById('vuokraveneS').checked = false;
+document.getElementById('scrollWrap').scrollTo({ top: 0, behavior: 'smooth' });
+saveLocal();
 }
 
 function windDir(deg) {
- const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
- return dirs[Math.round(deg / 22.5) % 16];
+const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+return dirs[Math.round(deg / 22.5) % 16];
 }
 
 function beaufort(ms) {
- const scale = [0.3,1.6,3.4,5.5,8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7];
- let b = 0;
- while (b < scale.length && ms >= scale[b]) b++;
- return b;
+const scale = [0.3,1.6,3.4,5.5,8.0,10.8,13.9,17.2,20.8,24.5,28.5,32.7];
+let b = 0;
+while (b < scale.length && ms >= scale[b]) b++;
+return b;
 }
 
 function fetchWeather() {
- const btn = document.getElementById('gpsBtn');
- const status = document.getElementById('gpsStatus');
- btn.disabled = true;
- status.className = 'gps-status';
- status.textContent = '📍 Haetaan sijaintia...';
+const btn = document.getElementById('gpsBtn');
+const status = document.getElementById('gpsStatus');
+btn.disabled = true;
+status.className = 'gps-status';
+status.textContent = '📍 Haetaan sijaintia...';
 
- if (!navigator.geolocation) {
- status.className = 'gps-status error';
- status.textContent = 'GPS ei ole käytettävissä tällä laitteella.';
- btn.disabled = false;
- return;
- }
+if (!navigator.geolocation) {
+status.className = 'gps-status error';
+status.textContent = 'GPS ei ole käytettävissä tällä laitteella.';
+btn.disabled = false;
+return;
+}
 
- navigator.geolocation.getCurrentPosition(async (pos) => {
- const lat = pos.coords.latitude.toFixed(4);
- const lon = pos.coords.longitude.toFixed(4);
- status.textContent = `📍 Sijainti: ${lat}°N ${lon}°E — haetaan säätietoja...`;
+navigator.geolocation.getCurrentPosition(async (pos) => {
+const lat = pos.coords.latitude.toFixed(4);
+const lon = pos.coords.longitude.toFixed(4);
+status.textContent = `📍 Sijainti: ${lat}°N ${lon}°E — haetaan säätietoja...`;
 
- try {
- let placeName = '';
- try {
- const geoResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`, { headers: { 'Accept-Language': 'fi' } });
- const geoData = await geoResp.json();
- const addr = geoData.address || {};
- placeName = addr.sea || addr.bay || addr.water || addr.municipality || addr.city || addr.town || addr.village || addr.county || '';
- } catch(e) {}
+try {
+let placeName = '';
+try {
+const geoResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`, { headers: { 'Accept-Language': 'fi' } });
+const geoData = await geoResp.json();
+const addr = geoData.address || {};
+placeName = addr.sea || addr.bay || addr.water || addr.municipality || addr.city || addr.town || addr.village || addr.county || '';
+} catch(e) {}
 
- const weatherResp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility,weather_code&wind_speed_unit=ms&timezone=auto`);
- const wd = await weatherResp.json();
- const cur = wd.current;
+const weatherResp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility,weather_code&wind_speed_unit=ms&timezone=auto`);
+const wd = await weatherResp.json();
+const cur = wd.current;
 
- const speedMs = cur.wind_speed_10m;
- const gustMs = cur.wind_gusts_10m;
- const dirDeg = cur.wind_direction_10m;
- const visM = cur.visibility;
- const dirStr = windDir(dirDeg);
- const bft = beaufort(speedMs);
+const speedMs = cur.wind_speed_10m;
+const gustMs = cur.wind_gusts_10m;
+const dirDeg = cur.wind_direction_10m;
+const visM = cur.visibility;
+const dirStr = windDir(dirDeg);
+const bft = beaufort(speedMs);
 
- const tuuliStr = `${dirStr} ${speedMs.toFixed(1)} m/s (puuskat ${gustMs.toFixed(1)} m/s, Bft ${bft})`;
- document.getElementById('tuuli').value = tuuliStr;
+const tuuliStr = `${dirStr} ${speedMs.toFixed(1)} m/s (puuskat ${gustMs.toFixed(1)} m/s, Bft ${bft})`;
+document.getElementById('tuuli').value = tuuliStr;
 
- let visStr = '';
- if (visM >= 10000) visStr = 'Hyvä (>10 km)';
- else if (visM >= 5000) visStr = `Kohtalainen (${(visM/1000).toFixed(1)} km)`;
- else if (visM >= 1000) visStr = `Heikko (${(visM/1000).toFixed(1)} km)`;
- else visStr = `Sumu / erittäin heikko (${visM} m)`;
- document.getElementById('nakyvyys').value = visStr;
+let visStr = '';
+if (visM >= 10000) visStr = 'Hyvä (>10 km)';
+else if (visM >= 5000) visStr = `Kohtalainen (${(visM/1000).toFixed(1)} km)`;
+else if (visM >= 1000) visStr = `Heikko (${(visM/1000).toFixed(1)} km)`;
+else visStr = `Sumu / erittäin heikko (${visM} m)`;
+document.getElementById('nakyvyys').value = visStr;
 
- if (placeName) document.getElementById('vesialue').value = placeName;
+if (placeName) document.getElementById('vesialue').value = placeName;
 
- status.className = 'gps-status ok';
- status.textContent = `✓ Päivitetty ${new Date().toLocaleTimeString('fi-FI', {hour:'2-digit',minute:'2-digit'})}`;
- saveLocal();
- } catch(e) {
- status.className = 'gps-status error';
- status.textContent = 'Säätietojen haku epäonnistui. Tarkista verkkoyhteys.';
- }
- btn.disabled = false;
- }, (err) => {
- status.className = 'gps-status error';
- if (err.code === 1) status.textContent = 'Lupa evätty. iPad: Asetukset → Tietosuoja → Sijaintipalvelut → Safari → Kysy tai Salli.';
- else if (err.code === 2) status.textContent = 'Sijaintia ei saatu — siirry ulos tai yritä uudelleen.';
- else status.textContent = `GPS-virhe (koodi ${err.code}) — yritä uudelleen.`;
- btn.disabled = false;
- }, { timeout: 15000, maximumAge: 60000 });
+status.className = 'gps-status ok';
+status.textContent = `✓ Päivitetty ${new Date().toLocaleTimeString('fi-FI', {hour:'2-digit',minute:'2-digit'})}`;
+saveLocal();
+} catch(e) {
+status.className = 'gps-status error';
+status.textContent = 'Säätietojen haku epäonnistui. Tarkista verkkoyhteys.';
+}
+btn.disabled = false;
+}, (err) => {
+status.className = 'gps-status error';
+if (err.code === 1) status.textContent = 'Lupa evätty. iPad: Asetukset → Tietosuoja → Sijaintipalvelut → Safari → Kysy tai Salli.';
+else if (err.code === 2) status.textContent = 'Sijaintia ei saatu — siirry ulos tai yritä uudelleen.';
+else status.textContent = `GPS-virhe (koodi ${err.code}) — yritä uudelleen.`;
+btn.disabled = false;
+}, { timeout: 15000, maximumAge: 60000 });
 }
 
 function saveLocal() {
- try {
- const data = {
- state, paatos, fields: {}, savedData,
- icc: getICCValue(),
- vuokravene: getVuokraveneValue()
- };
- ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','alusNimi','rekisteri','alustyyppi','moottori','paiva','vesialue','tuuli','nakyvyys','vahvuudet','kehitettavaa','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
- const el = document.getElementById(id);
- if (el) data.fields[id] = el.value;
- });
- localStorage.setItem('tutkintoraportti', JSON.stringify(data));
- } catch(e) {}
+try {
+const data = {
+state, paatos, fields: {}, savedData,
+icc: getICCValue(),
+vuokravene: getVuokraveneValue()
+};
+['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','paiva','vesialue','tuuli','nakyvyys','vahvuudet','kehitettavaa','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
+const el = document.getElementById(id);
+if (el) data.fields[id] = el.value;
+});
+localStorage.setItem('tutkintoraportti', JSON.stringify(data));
+} catch(e) {}
 }
 
 function loadLocal() {
- try {
- const raw = localStorage.getItem('tutkintoraportti');
- const data = raw ? JSON.parse(raw) : {};
- if (data.state) {
- for (const [sec, arr] of Object.entries(data.state)) {
- if (state[sec]) state[sec] = arr;
- }
- }
- if (data.paatos) setPaatos(data.paatos);
- if (data.fields) {
- for (const [id, val] of Object.entries(data.fields)) {
- const el = document.getElementById(id);
- if (el) el.value = val;
- }
- }
- if (data.icc) {
- document.getElementById('iccM').checked = data.icc.includes('M');
- document.getElementById('iccS').checked = data.icc.includes('S');
- }
- if (data.vuokravene) {
- document.getElementById('vuokraveneM').checked = data.vuokravene.includes('M');
- document.getElementById('vuokraveneS').checked = data.vuokravene.includes('S');
- }
- if (data.savedData) savedData = data.savedData;
- } catch(e) {}
- 
- const defaults = {
- vastaanottajaNimi: 'Jarmo Aaltonen',
- vastaanottajaEmail: 'jacke.seilaa@gmail.com',
- vastaanottajaPuh: '+358 44 3808569'
- };
- for (const [id, def] of Object.entries(defaults)) {
- const el = document.getElementById(id);
- if (el && !el.value) el.value = def;
- }
+try {
+const raw = localStorage.getItem('tutkintoraportti');
+const data = raw ? JSON.parse(raw) : {};
+if (data.state) {
+for (const [sec, arr] of Object.entries(data.state)) {
+if (state[sec]) state[sec] = arr;
+}
+}
+if (data.paatos) setPaatos(data.paatos);
+if (data.fields) {
+for (const [id, val] of Object.entries(data.fields)) {
+const el = document.getElementById(id);
+// Älä korvaa alus-pohjatietoja tai vastaanottaja-oletuksia
+if (el && !['alusNimi','rekisteri','alustyyppi','moottori','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].includes(id)) {
+el.value = val;
+}
+}
+}
+if (data.icc) {
+document.getElementById('iccM').checked = data.icc.includes('M');
+document.getElementById('iccS').checked = data.icc.includes('S');
+}
+if (data.vuokravene) {
+document.getElementById('vuokraveneM').checked = data.vuokravene.includes('M');
+document.getElementById('vuokraveneS').checked = data.vuokravene.includes('S');
+}
+if (data.savedData) savedData = data.savedData;
+} catch(e) {}
+
+const defaults = {
+vastaanottajaNimi: 'Jarmo Aaltonen',
+vastaanottajaEmail: 'jacke.seilaa@gmail.com',
+vastaanottajaPuh: '+358 44 3808569'
+};
+for (const [id, def] of Object.entries(defaults)) {
+const el = document.getElementById(id);
+if (el && !el.value) el.value = def;
+}
 }
 
 const inputFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"]');
 inputFields.forEach((el, idx) => {
- el.addEventListener('keydown', (e) => {
- if (e.key === 'Enter') {
- e.preventDefault();
- if (idx < inputFields.length - 1) {
- inputFields[idx + 1].focus();
- } else {
- el.blur();
- }
- }
- });
- el.addEventListener('input', saveLocal);
+el.addEventListener('keydown', (e) => {
+if (e.key === 'Enter') {
+e.preventDefault();
+if (idx < inputFields.length - 1) {
+inputFields[idx + 1].focus();
+} else {
+el.blur();
+}
+}
+});
+el.addEventListener('input', saveLocal);
 });
 
 document.querySelectorAll('textarea').forEach(el => {
- el.addEventListener('input', saveLocal);
+el.addEventListener('input', saveLocal);
 });
 
 document.querySelectorAll('input[type="checkbox"]').forEach(el => {
- el.addEventListener('change', saveLocal);
+el.addEventListener('change', saveLocal);
 });
 
-// Init
 initState();
 loadLocal();
 for (const secNum of Object.keys(sections)) {
- renderSection(parseInt(secNum));
+renderSection(parseInt(secNum));
 }
 
 if (!document.getElementById('paiva').value) {
- const today = new Date();
- const yyyy = today.getFullYear();
- const mm = String(today.getMonth() + 1).padStart(2, '0');
- const dd = String(today.getDate()).padStart(2, '0');
- document.getElementById('paiva').value = `${yyyy}-${mm}-${dd}`;
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+document.getElementById('paiva').value = `${yyyy}-${mm}-${dd}`;
 }
 </script>
 
