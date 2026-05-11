@@ -83,6 +83,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <header>
 <h1>Tutkintoraportti – SNOP</h1>
 <p>s/y Quartet | Tarkistuslista ja tutkintoraportti</p>
+<p style="font-size: 0.7rem; opacity: 0.7; margin-top: 6px;">v1.3 | <span id="versionTime">--:--:--</span></p>
 <div class="progress-bar">
 <div class="progress-fill" id="progressFill" style="width:0%"></div>
 </div>
@@ -438,13 +439,29 @@ document.getElementById('previewModal').classList.remove('show');
 
 function formatDate(isoDate) {
  // Muunna yyyy-mm-dd muotoon pp.mm.yyyy
- if (!isoDate) return '';
+ if (!isoDate || isoDate === '') return '';
+ // Jos on jo muodossa pp.mm.yyyy, palauta sellaisenaan
+ if (isoDate.includes('.')) return isoDate;
+ // Muunna yyyy-mm-dd muotoon pp.mm.yyyy
  const parts = isoDate.split('-');
  if (parts.length === 3) {
- return `${parts[2]}.${parts[1]}.${parts[0]}`;
+ const [yyyy, mm, dd] = parts;
+ return `${dd}.${mm}.${yyyy}`;
  }
  return isoDate;
 }
+
+function updateClock() {
+ const now = new Date();
+ const hh = String(now.getHours()).padStart(2, '0');
+ const min = String(now.getMinutes()).padStart(2, '0');
+ const ss = String(now.getSeconds()).padStart(2, '0');
+ document.getElementById('versionTime').textContent = `${hh}:${min}:${ss}`;
+}
+
+// Päivitä kello joka sekunti
+setInterval(updateClock, 1000);
+updateClock();
 
 function confirmSaveData() {
 closePreview();
