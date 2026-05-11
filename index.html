@@ -409,7 +409,6 @@ const vesialue = getField('vesialue');
 const paiva = getField('paiva');
 const icc = getICCValue() || '(ei valittu)';
 const vuokravene = getVuokraveneValue() || '(ei valittu)';
-const paatosText = paatos === 'hyvaksytty' ? '✓ HYVÄKSYTTY' : paatos === 'uusinta' ? '⟲ UUSINTA VAADITAAN' : '(ei merkitty)';
 
 const [etunimi, sukunimi] = splitNimi(kokelasNimi);
 const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
@@ -426,7 +425,6 @@ let html = `
 <div class="modal-field"><div class="modal-field-label">TARKASTAJA</div><div class="modal-field-value">${getField('vastaanottajaNimi') || '—'}</div></div>
 <div class="modal-field"><div class="modal-field-label">ICC</div><div class="modal-field-value">${icc}</div></div>
 <div class="modal-field"><div class="modal-field-label">VUOKRAVENE</div><div class="modal-field-value">${vuokravene}</div></div>
-<div class="modal-field"><div class="modal-field-label">TODISTUS</div><div class="modal-field-value">${paatosText}</div></div>
 <div class="modal-field"><div class="modal-field-label">TUTKINTO PVM</div><div class="modal-field-value">${paiva || '—'}</div></div>
 `;
 
