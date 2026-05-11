@@ -1091,9 +1091,28 @@ function loadLocal() {
  }
 }
 
-document.querySelectorAll('input, textarea').forEach(el => {
+// Enter-logiikka lomakkeen kentille
+const inputFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"]');
+inputFields.forEach((el, idx) => {
+ el.addEventListener('keydown', (e) => {
+ if (e.key === 'Enter') {
+ e.preventDefault();
+ // Siirry seuraavaan kenttään
+ if (idx < inputFields.length - 1) {
+ inputFields[idx + 1].focus();
+ } else {
+ // Viimeisessä kentässä: sulkea näppäimistö
+ el.blur();
+ }
+ }
+ });
  el.addEventListener('input', saveLocal);
 });
+
+document.querySelectorAll('textarea').forEach(el => {
+ el.addEventListener('input', saveLocal);
+});
+
 document.querySelectorAll('input[type="checkbox"]').forEach(el => {
  el.addEventListener('change', saveLocal);
 });
