@@ -438,6 +438,16 @@ function closePreview() {
 document.getElementById('previewModal').classList.remove('show');
 }
 
+function formatDate(isoDate) {
+ // Muunna yyyy-mm-dd muotoon pp.mm.yyyy
+ if (!isoDate) return '';
+ const parts = isoDate.split('-');
+ if (parts.length === 3) {
+ return `${parts[2]}.${parts[1]}.${parts[0]}`;
+ }
+ return isoDate;
+}
+
 function confirmSaveData() {
 closePreview();
 
@@ -449,12 +459,15 @@ const vesialue = getField('vesialue');
 const paiva = getField('paiva');
 const icc = getICCValue();
 const vuokravene = getVuokraveneValue();
-const paatosText = paatos === 'hyvaksytty' ? 'Hyväksytty' : paatos === 'uusinta' ? 'Uusinta vaaditaan' : '';
 
 const [etunimi, sukunimi] = splitNimi(kokelasNimi);
 const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
 
-const row = [etunimi, sukunimi, katuosoite, postinumero, kaupunki, syntymaika, kokelasEmail, vesialue, getField('vastaanottajaNimi'), icc, vuokravene, paatosText, paiva];
+// Muunna päivämäärä pp.mm.yyyy muotoon
+const formattedDate = formatDate(paiva);
+
+// Poistettu paatosText - L-sarake jätetään tyhjäksi PDF-integraatiota varten
+const row = [etunimi, sukunimi, katuosoite, postinumero, kaupunki, syntymaika, kokelasEmail, vesialue, getField('vastaanottajaNimi'), icc, vuokravene, '', formattedDate];
 
 savedData.push(row);
 saveLocal();
