@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tutkintoraportti">
-<title>SNOP – Tutkintoraportti</title>
+<title>SNOP – Tutkintoraportti v2</title>
 <style>
  :root {
  --blue: #0a4272;
@@ -22,297 +22,84 @@
  --shadow: 0 2px 8px rgba(10,66,114,0.10);
  }
  * { box-sizing: border-box; margin: 0; padding: 0; }
- html {
- height: 100%;
- overflow: hidden;
- position: fixed;
- width: 100%;
- }
- body {
- height: 100%;
- width: 100%;
- overflow: hidden;
- position: fixed;
- font-family: -apple-system, BlinkMacSystemFont, sans-serif;
- background: #f0f4f8;
- color: var(--text);
- }
- .scroll-wrap {
- position: absolute;
- top: 0; left: 0; right: 0; bottom: 0;
- overflow-y: auto;
- -webkit-overflow-scrolling: touch;
- overscroll-behavior: contain;
- padding-bottom: 20px;
- }
- header {
- background: var(--blue);
- color: white;
- padding: 14px 16px 10px;
- box-shadow: 0 2px 8px rgba(0,0,0,0.2);
- }
+ html { height: 100%; overflow: hidden; position: fixed; width: 100%; }
+ body { height: 100%; width: 100%; overflow: hidden; position: fixed; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f4f8; color: var(--text); }
+ .scroll-wrap { position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 20px; }
+ header { background: var(--blue); color: white; padding: 14px 16px 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
  header h1 { font-size: 1.05rem; font-weight: 700; }
  header p { font-size: 0.76rem; opacity: 0.8; margin-top: 2px; }
- .progress-bar {
- background: rgba(255,255,255,0.2);
- height: 4px; border-radius: 2px;
- margin-top: 8px; overflow: hidden;
- }
- .progress-fill {
- height: 100%; background: #4fc3f7;
- border-radius: 2px; transition: width 0.4s ease;
- }
- .section {
- margin: 12px 12px 0;
- background: white;
- border-radius: var(--radius);
- box-shadow: var(--shadow);
- overflow: hidden;
- }
- .section-header {
- background: var(--blue);
- color: white;
- padding: 9px 14px;
- font-size: 0.80rem;
- font-weight: 700;
- letter-spacing: 0.04em;
- text-transform: uppercase;
- }
- .section-note {
- background: var(--light);
- border-left: 3px solid var(--blue);
- font-size: 0.77rem;
- color: var(--muted);
- padding: 7px 14px;
- line-height: 1.4;
- font-style: italic;
- }
- .item {
- display: flex;
- align-items: flex-start;
- padding: 12px 14px;
- border-bottom: 1px solid #eef2f7;
- gap: 12px;
- cursor: pointer;
- transition: background 0.15s;
- -webkit-tap-highlight-color: transparent;
- user-select: none;
- }
+ .progress-bar { background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+ .progress-fill { height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s ease; }
+ .section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+ .section-header { background: var(--blue); color: white; padding: 9px 14px; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+ .section-note { background: var(--light); border-left: 3px solid var(--blue); font-size: 0.77rem; color: var(--muted); padding: 7px 14px; line-height: 1.4; font-style: italic; }
+ .item { display: flex; align-items: flex-start; padding: 12px 14px; border-bottom: 1px solid #eef2f7; gap: 12px; cursor: pointer; transition: background 0.15s; user-select: none; }
  .item:last-child { border-bottom: none; }
- .item:active { background: #f0f4f8; }
  .item.checked { background: var(--checked-bg); }
- .checkbox {
- flex-shrink: 0;
- width: 28px; height: 28px;
- border: 2px solid var(--border);
- border-radius: 6px;
- display: flex; align-items: center; justify-content: center;
- font-size: 16px;
- transition: all 0.15s;
- margin-top: 1px;
- background: white;
- }
- .item.checked .checkbox {
- background: var(--checked-border);
- border-color: var(--checked-border);
- color: white;
- }
- .item-text {
- flex: 1; font-size: 0.87rem; line-height: 1.45; color: var(--text);
- }
+ .checkbox { flex-shrink: 0; width: 28px; height: 28px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s; margin-top: 1px; background: white; }
+ .item.checked .checkbox { background: var(--checked-border); border-color: var(--checked-border); color: white; }
+ .item-text { flex: 1; font-size: 0.87rem; line-height: 1.45; color: var(--text); }
  .item.checked .item-text { color: #256d3b; }
- .fields-section, .arviointi-section {
- margin: 12px 12px 0;
- background: white;
- border-radius: var(--radius);
- box-shadow: var(--shadow);
- overflow: hidden;
- }
+ .fields-section, .arviointi-section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
  .field-group { padding: 0 14px 12px; }
  .field-group + .field-group { border-top: 1px solid #eef2f7; padding-top: 12px; }
- .field-group-title {
- font-size: 0.71rem; font-weight: 700;
- color: var(--blue); text-transform: uppercase;
- letter-spacing: 0.06em; padding: 11px 0 7px;
- }
+ .field-group-title { font-size: 0.71rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; padding: 11px 0 7px; }
  .field-row { margin-bottom: 9px; }
- label {
- display: block; font-size: 0.75rem;
- color: var(--muted); margin-bottom: 3px; font-weight: 600;
- }
- input[type="text"], input[type="email"], input[type="date"], textarea, select {
- width: 100%;
- border: 1.5px solid var(--border);
- border-radius: 7px;
- padding: 10px 11px;
- font-size: 16px;
- font-family: inherit;
- color: var(--text);
- background: #fafcff;
- transition: border-color 0.15s;
- -webkit-appearance: none;
- appearance: none;
- outline: none;
- }
+ label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 3px; font-weight: 600; }
+ input[type="text"], input[type="email"], input[type="date"], textarea, select { width: 100%; border: 1.5px solid var(--border); border-radius: 7px; padding: 10px 11px; font-size: 16px; font-family: inherit; color: var(--text); background: #fafcff; transition: border-color 0.15s; outline: none; }
  input:focus, textarea:focus { border-color: var(--blue); background: white; }
  textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
- .checkbox-row {
- display: flex; align-items: center; gap: 10px;
- padding: 10px 0; cursor: pointer;
- }
- .checkbox-input {
- width: 24px; height: 24px;
- cursor: pointer;
- accent-color: var(--blue);
- }
- .checkbox-label {
- font-size: 0.87rem; color: var(--text); cursor: pointer;
- }
+ .checkbox-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; cursor: pointer; }
+ .checkbox-input { width: 24px; height: 24px; cursor: pointer; accent-color: var(--blue); }
+ .checkbox-label { font-size: 0.87rem; color: var(--text); cursor: pointer; }
  .paatos-row { display: flex; gap: 10px; padding: 10px 14px 14px; }
- .paatos-btn {
- flex: 1; padding: 12px 8px;
- border-radius: 8px; border: 2px solid var(--border);
- font-size: 0.9rem; font-weight: 700; font-family: inherit;
- cursor: pointer; transition: all 0.15s;
- background: white; color: var(--text);
- -webkit-tap-highlight-color: transparent;
- }
+ .paatos-btn { flex: 1; padding: 12px 8px; border-radius: 8px; border: 2px solid var(--border); font-size: 0.9rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; background: white; color: var(--text); }
  .paatos-btn.selected-hyvaksytty { background: #28a745; border-color: #28a745; color: white; }
  .paatos-btn.selected-uusinta { background: #dc3545; border-color: #dc3545; color: white; }
- .action-bar {
- margin: 12px 12px 0;
- background: white;
- border-radius: var(--radius);
- padding: 10px 12px;
- display: flex; gap: 10px;
- box-shadow: var(--shadow);
- }
- .btn {
- flex: 1; padding: 13px 10px;
- border-radius: 9px; border: none;
- font-family: inherit; font-size: 0.87rem; font-weight: 700;
- cursor: pointer;
- display: flex; align-items: center; justify-content: center; gap: 6px;
- transition: all 0.15s;
- -webkit-tap-highlight-color: transparent;
- }
- .btn-reset {
- background: #f0f4f8; color: var(--muted);
- border: 1.5px solid var(--border);
- flex: 0 0 auto; width: 52px; padding: 13px 0;
- font-size: 1rem;
- }
+ .action-bar { margin: 12px 12px 0; background: white; border-radius: var(--radius); padding: 10px 12px; display: flex; gap: 10px; box-shadow: var(--shadow); }
+ .btn { flex: 1; padding: 13px 10px; border-radius: 9px; border: none; font-family: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; }
+ .btn-reset { background: #f0f4f8; color: var(--muted); border: 1.5px solid var(--border); flex: 0 0 auto; width: 52px; padding: 13px 0; font-size: 1rem; }
  .btn-print { background: var(--blue); color: white; }
  .btn-email { background: var(--gold); color: white; }
  .btn-save { background: #28a745; color: white; }
- .btn:active { opacity: 0.82; transform: scale(0.97); }
- .btn:disabled { opacity: 0.5; cursor: not-allowed; }
- .counter {
- font-size: 0.71rem; color: var(--muted);
- padding: 5px 14px 8px;
- border-top: 1px solid #eef2f7; text-align: right;
- }
- .gps-btn {
- width: 100%; padding: 11px 14px;
- margin: 6px 0 10px;
- background: var(--blue); color: white;
- border: none; border-radius: 8px;
- font-family: inherit; font-size: 0.87rem; font-weight: 700;
- cursor: pointer; transition: opacity 0.15s;
- -webkit-tap-highlight-color: transparent;
- }
- .gps-btn:active { opacity: 0.8; }
- .gps-btn:disabled { opacity: 0.5; cursor: default; }
- .gps-status {
- font-size: 0.77rem; color: var(--muted);
- padding: 0 0 6px; min-height: 18px; text-align: center;
- }
+ .btn:active { opacity: 0.82; }
+ .counter { font-size: 0.71rem; color: var(--muted); padding: 5px 14px 8px; border-top: 1px solid #eef2f7; text-align: right; }
+ .gps-btn { width: 100%; padding: 11px 14px; margin: 6px 0 10px; background: var(--blue); color: white; border: none; border-radius: 8px; font-family: inherit; font-size: 0.87rem; font-weight: 700; cursor: pointer; }
+ .gps-btn:disabled { opacity: 0.5; }
+ .gps-status { font-size: 0.77rem; color: var(--muted); padding: 0 0 6px; min-height: 18px; text-align: center; }
  .gps-status.error { color: #dc3545; }
  .gps-status.ok { color: #28a745; }
-
-.modal {
-display: none;
-position: fixed;
-z-index: 1000;
-left: 0; top: 0;
-width: 100%; height: 100%;
-background-color: rgba(0,0,0,0.5);
-}
-.modal.show { display: flex; align-items: flex-end; }
-.modal-content {
-background: white;
-border-radius: 16px 16px 0 0;
-padding: 20px;
-width: 100%;
-max-height: 90vh;
-overflow-y: auto;
--webkit-overflow-scrolling: touch;
-box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
-}
-.modal-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(–blue); }
-.modal-field { margin-bottom: 12px; }
-.modal-field-label { font-size: 0.71rem; color: var(–muted); font-weight: 600; text-transform: uppercase; }
-.modal-field-value { font-size: 0.9rem; color: var(–text); margin-top: 3px; word-break: break-word; }
-.modal-buttons {
-display: flex; gap: 10px; margin-top: 20px;
-}
-.modal-btn {
-flex: 1; padding: 12px;
-border-radius: 8px; border: none;
-font-family: inherit; font-size: 0.9rem; font-weight: 700;
-cursor: pointer; transition: all 0.15s;
-}
-.modal-btn-confirm { background: #28a745; color: white; }
-.modal-btn-cancel { background: #f0f4f8; color: var(–muted); border: 1.5px solid var(–border); }
-.modal-btn:active { opacity: 0.8; }
-
-.status-message {
-position: fixed;
-bottom: 20px; left: 20px; right: 20px;
-padding: 12px 16px;
-border-radius: 8px;
-font-size: 0.9rem;
-display: none;
-z-index: 2000;
-}
-.status-message.show { display: block; animation: slideUp 0.3s ease; }
-.status-message.success { background: #28a745; color: white; }
-.status-message.error { background: #dc3545; color: white; }
-.status-message.info { background: #0a4272; color: white; }
-@keyframes slideUp {
-from { transform: translateY(100%); opacity: 0; }
-to { transform: translateY(0); opacity: 1; }
-}
-
-@media print {
-html, body { height: auto; overflow: visible; position: static; }
-.scroll-wrap { position: static; overflow: visible; }
-.action-bar { display: none; }
-header { background: none; color: black; box-shadow: none; border-bottom: 2px solid black; }
-header h1 { color: black; }
-header p, .progress-bar { display: none; }
-.section, .fields-section, .arviointi-section {
-margin: 8px 0 0; box-shadow: none; border: 1px solid #aaa; break-inside: avoid;
-}
-.section-header { background: #ddd; color: black; }
-.paatos-btn.selected-hyvaksytty { background: #c8e6c9; color: black; border-color: #4caf50; }
-.paatos-btn.selected-uusinta { background: #ffcdd2; color: black; border-color: #ef9a9a; }
-input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
-}
+ .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+ .modal.show { display: flex; align-items: flex-end; }
+ .modal-content { background: white; border-radius: 16px 16px 0 0; padding: 20px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 -2px 8px rgba(0,0,0,0.2); }
+ .modal-header { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--blue); }
+ .modal-field { margin-bottom: 12px; }
+ .modal-field-label { font-size: 0.71rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+ .modal-field-value { font-size: 0.9rem; color: var(--text); margin-top: 3px; word-break: break-word; }
+ .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+ .modal-btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-family: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
+ .modal-btn-confirm { background: #28a745; color: white; }
+ .modal-btn-cancel { background: #f0f4f8; color: var(--muted); border: 1.5px solid var(--border); }
+ .status-message { position: fixed; bottom: 20px; left: 20px; right: 20px; padding: 12px 16px; border-radius: 8px; font-size: 0.9rem; display: none; z-index: 2000; }
+ .status-message.show { display: block; animation: slideUp 0.3s ease; }
+ .status-message.success { background: #28a745; color: white; }
+ .status-message.error { background: #dc3545; color: white; }
+ .status-message.info { background: #0a4272; color: white; }
+ @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+ @media print { html, body { height: auto; overflow: visible; position: static; } .scroll-wrap { position: static; overflow: visible; } .action-bar { display: none; } header { background: none; color: black; box-shadow: none; border-bottom: 2px solid black; } }
 </style>
-
 </head>
 <body>
 <div class="scroll-wrap" id="scrollWrap">
 <header>
- <h1>Tutkintoraportti – SNOP</h1>
+ <h1>Tutkintoraportti – SNOP v2</h1>
  <p>Tarkistuslista ja tutkintoraportti / Veneilytaidon YTO:n vastaanottajalle</p>
  <div class="progress-bar">
  <div class="progress-fill" id="progressFill" style="width:0%"></div>
  </div>
 </header>
 
-<!-- Kokelaan tiedot -->
+<!-- KOKELAS JA ALUS -->
 
 <div class="fields-section">
  <div class="section-header">KOKELAAN JA ALUKSEN TIEDOT</div>
@@ -364,9 +151,7 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <label>Päivämäärä</label>
  <input type="date" id="paiva">
  </div>
- <button class="gps-btn" id="gpsBtn" onclick="fetchWeather()">
- 📍 Hae sijainti &amp; tuulitiedot GPS:llä
- </button>
+ <button class="gps-btn" id="gpsBtn" onclick="fetchWeather()">📍 Hae sijainti &amp; tuulitiedot GPS:llä</button>
  <div id="gpsStatus" class="gps-status"></div>
  <div class="field-row">
  <label>Vesialue / sijainti</label>
@@ -381,26 +166,41 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <input type="text" id="nakyvyys" placeholder="esim. Hyvä, >5 km">
  </div>
  </div>
+
+ <!-- VALINNAT - ICC -->
+
  <div class="field-group">
- <div class="field-group-title">Valinnat</div>
+ <div class="field-group-title">ICC (Kansainvälinen huviveneenkuljettajankirja)</div>
  <div class="checkbox-row">
- <input type="checkbox" id="iccCheckbox" class="checkbox-input">
- <label for="iccCheckbox" class="checkbox-label">ICC (Kansainvälinen huviveneenkuljettajankirja)</label>
+ <input type="checkbox" id="iccM" class="checkbox-input">
+ <label for="iccM" class="checkbox-label">M - Moottorialukselle</label>
  </div>
  <div class="checkbox-row">
- <input type="checkbox" id="vuokraveneCheckbox" class="checkbox-input">
- <label for="vuokraveneCheckbox" class="checkbox-label">Vuokravene</label>
+ <input type="checkbox" id="iccS" class="checkbox-input">
+ <label for="iccS" class="checkbox-label">S - Purjealukselle</label>
+ </div>
+ </div>
+
+ <!-- VALINNAT - VUOKRAVENE -->
+
+ <div class="field-group">
+ <div class="field-group-title">Vuokravene</div>
+ <div class="checkbox-row">
+ <input type="checkbox" id="vuokraveneM" class="checkbox-input">
+ <label for="vuokraveneM" class="checkbox-label">M - Moottorialukselle</label>
+ </div>
+ <div class="checkbox-row">
+ <input type="checkbox" id="vuokraveneS" class="checkbox-input">
+ <label for="vuokraveneS" class="checkbox-label">S - Purjealukselle</label>
  </div>
  </div>
 </div>
 
-<!-- Yleinen ohje -->
+<!-- TEHTÄVÄT -->
 
 <div class="section">
  <div class="section-note">Rastita tutkinnossa käydyt tehtävät. Kaikissa tehtävissä arvioidaan kokelaan kykyä johtaa miehistöä (viestinnän selkeys, oikeaaikaisuus ja rauhallisuus).</div>
 </div>
-
-<!-- 1 -->
 
 <div class="section">
  <div class="section-header">1. VALMISTELUT JA TURVALLISUUS</div>
@@ -408,15 +208,11 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <div class="counter" id="cnt1"></div>
 </div>
 
-<!-- 2 -->
-
 <div class="section">
  <div class="section-header">2. ALUKSEN KÄSITTELY</div>
  <div id="sec2"></div>
  <div class="counter" id="cnt2"></div>
 </div>
-
-<!-- 3 -->
 
 <div class="section">
  <div class="section-header">3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)</div>
@@ -425,8 +221,6 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <div class="counter" id="cnt3"></div>
 </div>
 
-<!-- 4 -->
-
 <div class="section">
  <div class="section-header">4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)</div>
  <div class="section-note">Täytä vain purjevenetutkinnossa</div>
@@ -434,15 +228,11 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <div class="counter" id="cnt4"></div>
 </div>
 
-<!-- 5 -->
-
 <div class="section">
  <div class="section-header">5. NAVIGOINTI JA TILANTEEN HALLINTA</div>
  <div id="sec5"></div>
  <div class="counter" id="cnt5"></div>
 </div>
-
-<!-- 6 -->
 
 <div class="section">
  <div class="section-header">6. HENKILÖ YLI LAIDAN (POB) – Tehdään aina</div>
@@ -450,7 +240,7 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <div class="counter" id="cnt6"></div>
 </div>
 
-<!-- Arviointi -->
+<!-- ARVIOINTI -->
 
 <div class="arviointi-section">
  <div class="section-header">ARVIOINTI</div>
@@ -486,7 +276,7 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  </div>
 </div>
 
-<!-- Action bar -->
+<!-- NAPIT -->
 
 <div class="action-bar">
  <button class="btn btn-reset" onclick="confirmReset()" title="Seuraava kokelas">➕</button>
@@ -494,9 +284,9 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  <button class="btn btn-save" onclick="showPreview()">💾 Tallenna</button>
  <button class="btn btn-email" onclick="sendEmail()">📧 Lähetä</button>
 </div>
-</div><!-- end .scroll-wrap -->
+</div>
 
-<!-- Esikatselu Modal -->
+<!-- ESIKATSELU MODAL -->
 
 <div id="previewModal" class="modal">
  <div class="modal-content">
@@ -509,73 +299,32 @@ input, textarea { border: 1px solid #bbb; background: white; font-size: 11pt; }
  </div>
 </div>
 
-<!-- Kopioi Sheetsiin Modal -->
+<!-- KOPIOI MODAL -->
 
 <div id="copyModal" class="modal">
  <div class="modal-content">
  <div class="modal-header">📋 Kopioi Google Sheetsiin</div>
- <p style="font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);">
- Klikkaa alla olevaa painiketta ja valitse kaikki teksti. Sitten:
- </p>
- <ol style="font-size: 0.85rem; margin-bottom: 16px; color: var(--text); padding-left: 20px;">
- <li>Cmd+C (kopioi)</li>
- <li>Avaa Google Sheets taulukko</li>
- <li>Klikkaa solu A (rivi 2 tai seuraava tyhjä rivi)</li>
- <li>Cmd+V (liitä)</li>
- </ol>
- <textarea id="copyArea" readonly style="width: 100%; height: 200px; font-size: 0.75rem; font-family: monospace; padding: 12px; border: 1.5px solid var(--border); border-radius: 7px; background: #fafcff;"></textarea>
+ <p style="font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);">Klikkaa alla olevaa painiketta ja valitse kaikki teksti.</p>
+ <textarea id="copyArea" readonly style="width: 100%; height: 150px; font-size: 0.75rem; font-family: monospace; padding: 12px; border: 1.5px solid var(--border); border-radius: 7px; background: #fafcff;"></textarea>
  <div class="modal-buttons" style="margin-top: 20px;">
- <button class="modal-btn modal-btn-confirm" onclick="copieToClipboard()">📋 Kopioi leikepöydälle</button>
+ <button class="modal-btn modal-btn-confirm" onclick="copyToClipboard()">📋 Kopioi leikepöydälle</button>
  <button class="modal-btn modal-btn-cancel" onclick="closeCopyModal()">Valmis</button>
  </div>
  </div>
 </div>
 
-<!-- Status viesti -->
+<!-- STATUS -->
 
 <div id="statusMessage" class="status-message"></div>
 
 <script>
 const sections = {
- 1: [
- "Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.",
- "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).",
- "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.",
- "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."
- ],
- 2: [
- "Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).",
- "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).",
- "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.",
- "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."
- ],
- 3: [
- "Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).",
- "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.",
- "Liukuun nousu: Liukuun nousu on hallittu, ja veneen asento on vakaa.",
- "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.",
- "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen ilman, että peräaalto vyöryy takakannen yli.",
- "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille).",
- "Veneen kulkuasento: Moottoritrimmin säätö nopeuden mukaan (keulan nosto/lasku), sivuittaiskallistuman korjaaminen ja nousukynnyksen helpottaminen trimmitasoilla."
- ],
- 4: [
- "Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.",
- "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.",
- "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.",
- "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.",
- "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta)."
- ],
- 5: [
- "Paikanmääritys: Merkitty sijainti kartalle käyttäen merimerkkejä tai suuntimia.",
- "Väistämissäännöt: Tunnistettu muut alukset ja toimittu kansainvälisten meriteiden sääntöjen mukaan hyvissä ajoin.",
- "Lähestymissuunnitelma: Satamaan saavuttaessa kerrottu suunnitelman mukaiset syvyydet, merimerkit ja suuntimat ääneen."
- ],
- 6: [
- "Hälytys: Huudettu välittömästi \"Henkilö yli laidan!\" ja osoitettu tähystäjä.",
- "Lähestyminen: Vene ohjattu uhrin tuulen alapuolelle / moottoriveneellä myös tuulen yläpuolelle ja lähestyminen ajelehtimalla.",
- "Pysäytys: Vene pysähtynyt uhrin viereen niin, että hänet saadaan nostettua keskilaivasta.",
- "Turvallisuus: Moottori laitettu vapaalle heti, kun uhri on veneen välittömässä läheisyydessä."
- ]
+ 1: ["Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.", "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).", "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.", "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."],
+ 2: ["Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).", "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).", "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.", "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."],
+ 3: ["Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).", "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.", "Liukuun nousu: Liukuun nousu on hallittu, ja veneen asento on vakaa.", "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.", "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen ilman, että peräaalto vyöryy takakannen yli.", "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille).", "Veneen kulkuasento: Moottoritrimmin säätö nopeuden mukaan (keulan nosto/lasku), sivuittaiskallistuman korjaaminen ja nousukynnyksen helpottaminen trimmitasoilla."],
+ 4: ["Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.", "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.", "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.", "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.", "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta)."],
+ 5: ["Paikanmääritys: Merkitty sijainti kartalle käyttäen merimerkkejä tai suuntimia.", "Väistämissäännöt: Tunnistettu muut alukset ja toimittu kansainvälisten meriteiden sääntöjen mukaan hyvissä ajoin.", "Lähestymissuunnitelma: Satamaan saavuttaessa kerrottu suunnitelman mukaiset syvyydet, merimerkit ja suuntimat ääneen."],
+ 6: ["Hälytys: Huudettu välittömästi \"Henkilö yli laidan!\" ja osoitettu tähystäjä.", "Lähestyminen: Vene ohjattu uhrin tuulen alapuolelle / moottoriveneellä myös tuulen yläpuolelle ja lähestyminen ajelehtimalla.", "Pysäytys: Vene pysähtynyt uhrin viereen niin, että hänet saadaan nostettua keskilaivasta.", "Turvallisuus: Moottori laitettu vapaalle heti, kun uhri on veneen välittömässä läheisyydessä."]
 };
 
 const state = {};
@@ -596,10 +345,7 @@ function renderSection(secNum) {
  const checked = state[secNum][idx];
  const div = document.createElement('div');
  div.className = 'item' + (checked ? ' checked' : '');
- div.innerHTML = `
- <div class="checkbox">${checked ? '✓' : ''}</div>
- <div class="item-text">${text}</div>
- `;
+ div.innerHTML = `<div class="checkbox">${checked ? '✓' : ''}</div><div class="item-text">${text}</div>`;
  div.addEventListener('click', () => toggle(secNum, idx));
  container.appendChild(div);
  });
@@ -640,12 +386,28 @@ function setPaatos(val) {
 function getField(id) { return document.getElementById(id)?.value?.trim() || ''; }
 function getCheckbox(id) { return document.getElementById(id)?.checked || false; }
 
+function getICCValue() {
+ const m = getCheckbox('iccM');
+ const s = getCheckbox('iccS');
+ if (m && s) return 'MS';
+ if (m) return 'M';
+ if (s) return 'S';
+ return '';
+}
+
+function getVuokraveneValue() {
+ const m = getCheckbox('vuokraveneM');
+ const s = getCheckbox('vuokraveneS');
+ if (m && s) return 'MS';
+ if (m) return 'M';
+ if (s) return 'S';
+ return '';
+}
+
 function splitNimi(fullNimi) {
  const parts = fullNimi.trim().split(/\s+/);
  if (parts.length >= 2) {
- const etunimi = parts[0];
- const sukunimi = parts.slice(1).join(' ');
- return [etunimi, sukunimi];
+ return [parts[0], parts.slice(1).join(' ')];
  }
  return [fullNimi, ''];
 }
@@ -661,10 +423,7 @@ function splitOsoite(osoiteStr) {
  }
  }
  if (postIdx > 0) {
- const katuosoite = parts.slice(0, postIdx).join(' ');
- const postinumero = parts[postIdx];
- const kaupunki = parts.slice(postIdx + 1).join(' ');
- return [katuosoite, postinumero, kaupunki];
+ return [parts.slice(0, postIdx).join(' '), parts[postIdx], parts.slice(postIdx + 1).join(' ')];
  }
  }
  return [osoiteStr, '', ''];
@@ -674,72 +433,32 @@ function showPreview() {
  const kokelasNimi = getField('kokelasNimi');
  const syntymaika = getField('syntymaika');
  const osoite = getField('osoite');
- const puhelin = getField('puhelin');
  const kokelasEmail = getField('kokelasEmail');
  const vesialue = getField('vesialue');
  const paiva = getField('paiva');
- const icc = getCheckbox('iccCheckbox') ? 'Kyllä' : 'Ei';
- const vuokravene = getCheckbox('vuokraveneCheckbox') ? 'Kyllä' : 'Ei';
+ const icc = getICCValue() || '(ei valittu)';
+ const vuokravene = getVuokraveneValue() || '(ei valittu)';
  const paatosText = paatos === 'hyvaksytty' ? '✓ HYVÄKSYTTY' : paatos === 'uusinta' ? '⟲ UUSINTA VAADITAAN' : '(ei merkitty)';
-
+ 
  const [etunimi, sukunimi] = splitNimi(kokelasNimi);
  const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
-
+ 
  let html = `
- <div class="modal-field">
- <div class="modal-field-label">ETUNIMI</div>
- <div class="modal-field-value">${etunimi || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">SUKUNIMI</div>
- <div class="modal-field-value">${sukunimi || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">SYNTYMÄAIKA</div>
- <div class="modal-field-value">${syntymaika || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">KATUOSOITE</div>
- <div class="modal-field-value">${katuosoite || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">POSTINUMERO</div>
- <div class="modal-field-value">${postinumero || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">POSTITOIMIPAIKKA</div>
- <div class="modal-field-value">${kaupunki || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">E-MAIL</div>
- <div class="modal-field-value">${kokelasEmail || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">TUTKINTOPAIKKA</div>
- <div class="modal-field-value">${vesialue || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">TARKASTAJA</div>
- <div class="modal-field-value">${getField('vastaanottajaNimi') || '—'}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">ICC</div>
- <div class="modal-field-value">${icc}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">VUOKRAVENE</div>
- <div class="modal-field-value">${vuokravene}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">TODISTUS</div>
- <div class="modal-field-value">${paatosText}</div>
- </div>
- <div class="modal-field">
- <div class="modal-field-label">TUTKINTO PVM</div>
- <div class="modal-field-value">${paiva || '—'}</div>
- </div>
+ <div class="modal-field"><div class="modal-field-label">ETUNIMI</div><div class="modal-field-value">${etunimi || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">SUKUNIMI</div><div class="modal-field-value">${sukunimi || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">SYNTYMÄAIKA</div><div class="modal-field-value">${syntymaika || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">KATUOSOITE</div><div class="modal-field-value">${katuosoite || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">POSTINUMERO</div><div class="modal-field-value">${postinumero || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">POSTITOIMIPAIKKA</div><div class="modal-field-value">${kaupunki || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">E-MAIL</div><div class="modal-field-value">${kokelasEmail || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">TUTKINTOPAIKKA</div><div class="modal-field-value">${vesialue || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">TARKASTAJA</div><div class="modal-field-value">${getField('vastaanottajaNimi') || '—'}</div></div>
+ <div class="modal-field"><div class="modal-field-label">ICC</div><div class="modal-field-value">${icc}</div></div>
+ <div class="modal-field"><div class="modal-field-label">VUOKRAVENE</div><div class="modal-field-value">${vuokravene}</div></div>
+ <div class="modal-field"><div class="modal-field-label">TODISTUS</div><div class="modal-field-value">${paatosText}</div></div>
+ <div class="modal-field"><div class="modal-field-label">TUTKINTO PVM</div><div class="modal-field-value">${paiva || '—'}</div></div>
  `;
-
+ 
  document.getElementById('previewContent').innerHTML = html;
  document.getElementById('previewModal').classList.add('show');
 }
@@ -757,40 +476,20 @@ function confirmSaveData() {
  const kokelasEmail = getField('kokelasEmail');
  const vesialue = getField('vesialue');
  const paiva = getField('paiva');
- const icc = getCheckbox('iccCheckbox') ? 'Kyllä' : 'Ei';
- const vuokravene = getCheckbox('vuokraveneCheckbox') ? 'Kyllä' : 'Ei';
+ const icc = getICCValue();
+ const vuokravene = getVuokraveneValue();
  const paatosText = paatos === 'hyvaksytty' ? 'Hyväksytty' : paatos === 'uusinta' ? 'Uusinta vaaditaan' : '';
-
+ 
  const [etunimi, sukunimi] = splitNimi(kokelasNimi);
  const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
-
- const row = [
- etunimi,
- sukunimi,
- katuosoite,
- postinumero,
- kaupunki,
- syntymaika,
- kokelasEmail,
- vesialue,
- getField('vastaanottajaNimi'),
- icc,
- vuokravene,
- paatosText,
- paiva
- ];
-
- // Tallenna taulukkoon
+ 
+ const row = [etunimi, sukunimi, katuosoite, postinumero, kaupunki, syntymaika, kokelasEmail, vesialue, getField('vastaanottajaNimi'), icc, vuokravene, paatosText, paiva];
+ 
  savedData.push(row);
  saveLocal();
- 
- // Näytä kopiointimodali
  showCopyModal(row);
  
- // Resetoi
- setTimeout(() => {
- resetCokelas();
- }, 500);
+ setTimeout(() => { resetCokelas(); }, 500);
 }
 
 function showCopyModal(row) {
@@ -804,7 +503,7 @@ function closeCopyModal() {
  document.getElementById('copyModal').classList.remove('show');
 }
 
-function copieToClipboard() {
+function copyToClipboard() {
  const textarea = document.getElementById('copyArea');
  textarea.select();
  document.execCommand('copy');
@@ -815,9 +514,7 @@ function showStatus(message, type = 'info') {
  const el = document.getElementById('statusMessage');
  el.textContent = message;
  el.className = `status-message show ${type}`;
- setTimeout(() => {
- el.classList.remove('show');
- }, 4000);
+ setTimeout(() => { el.classList.remove('show'); }, 4000);
 }
 
 function sendEmail() {
@@ -835,21 +532,15 @@ function buildEmailBody() {
  const vesialue = getField('vesialue');
  const tuuli = getField('tuuli');
  const nakyvyys = getField('nakyvyys');
- const alusNimi = getField('alusNimi');
- const alustyyppi = getField('alustyyppi');
  const syntymaika = getField('syntymaika');
  const puhelin = getField('puhelin');
  const osoite = getField('osoite');
  const kokelasEmail = getField('kokelasEmail');
- const rekisteri = getField('rekisteri');
- const moottori = getField('moottori');
  const vahvuudet = getField('vahvuudet');
  const kehitettavaa = getField('kehitettavaa');
  const vastaanottajaNimi = getField('vastaanottajaNimi');
- const vastaanottajaEmail = getField('vastaanottajaEmail');
- const vastaanottajaPuh = getField('vastaanottajaPuh');
  const paatosText = paatos === 'hyvaksytty' ? 'HYVÄKSYTTY ✓' : paatos === 'uusinta' ? 'UUSINTA VAADITAAN' : '(ei merkitty)';
-
+ 
  let body = `TARKISTUSLISTA JA TUTKINTORAPORTTI
 Veneilytaidon YTO:n vastaanottajalle
 =====================================
@@ -860,12 +551,6 @@ Osoite: ${osoite}
 Puhelin: ${puhelin}
 Sähköposti: ${kokelasEmail}
 
-ALUS
-Nimi: ${alusNimi}
-Rekisterinumero: ${rekisteri}
-Alustyyppi: ${alustyyppi}
-Moottoriteho: ${moottori}
-
 TUTKINTO-OLOSUHTEET
 Päivämäärä: ${paiva}
 Vesialue: ${vesialue}
@@ -873,30 +558,6 @@ Tuuli: ${tuuli}
 Näkyvyys: ${nakyvyys}
 
 =====================================
-TARKISTUSLISTA
-=====================================
-`;
-
- const secNames = {
- 1: '1. VALMISTELUT JA TURVALLISUUS',
- 2: '2. ALUKSEN KÄSITTELY',
- 3: '3. MOOTTORIAJO JA MERIMIESTAITO (MOOTTORIVENE)',
- 4: '4. PURJEHDUS JA MERIMIESTAITO (PURJEVENE)',
- 5: '5. NAVIGOINTI JA TILANTEEN HALLINTA',
- 6: '6. HENKILÖ YLI LAIDAN (POB)'
- };
-
- for (const [secNum, items] of Object.entries(sections)) {
- body += secNames[secNum] + '\n';
- items.forEach((text, idx) => {
- const mark = state[secNum][idx] ? '[X]' : '[ ]';
- const short = text.split(':')[0];
- body += ` ${mark} ${short}\n`;
- });
- body += '\n';
- }
-
- body += `=====================================
 ARVIOINTI
 =====================================
 Vahvuudet:
@@ -907,20 +568,13 @@ ${kehitettavaa || '-'}
 
 PÄÄTÖS: ${paatosText}
 
-=====================================
-TUTKINNON VASTAANOTTAJA
-${vastaanottajaNimi}
-${vastaanottajaEmail}
-${vastaanottajaPuh}
-
-=====================================
 Lähetetty SNOP Tutkintoraportti-sovelluksesta.
 `;
  return body;
 }
 
 function confirmReset() {
- if (confirm('Seuraava kokelas?\n\nTyhjentää kokelaan ja aluksen tiedot sekä rastit ja arvioinnin.\nPäivämäärä, olosuhteet ja vastaanottajan tiedot säilyvät.')) {
+ if (confirm('Seuraava kokelas?\n\nTyhjentää kokelaan ja aluksen tiedot sekä rastit ja arvioinnin.')) {
  resetCokelas();
  }
 }
@@ -933,14 +587,14 @@ function resetCokelas() {
  paatos = '';
  document.getElementById('btnHyvaksytty').className = 'paatos-btn';
  document.getElementById('btnUusinta').className = 'paatos-btn';
- ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail',
- 'alusNimi','rekisteri','alustyyppi','moottori',
- 'vahvuudet','kehitettavaa'].forEach(id => {
+ ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','alusNimi','rekisteri','alustyyppi','moottori','vahvuudet','kehitettavaa'].forEach(id => {
  const el = document.getElementById(id);
  if (el) el.value = '';
  });
- document.getElementById('iccCheckbox').checked = false;
- document.getElementById('vuokraveneCheckbox').checked = false;
+ document.getElementById('iccM').checked = false;
+ document.getElementById('iccS').checked = false;
+ document.getElementById('vuokraveneM').checked = false;
+ document.getElementById('vuokraveneS').checked = false;
  document.getElementById('scrollWrap').scrollTo({ top: 0, behavior: 'smooth' });
  saveLocal();
 }
@@ -979,18 +633,13 @@ function fetchWeather() {
  try {
  let placeName = '';
  try {
- const geoResp = await fetch(
- `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`,
- { headers: { 'Accept-Language': 'fi' } }
- );
+ const geoResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`, { headers: { 'Accept-Language': 'fi' } });
  const geoData = await geoResp.json();
  const addr = geoData.address || {};
  placeName = addr.sea || addr.bay || addr.water || addr.municipality || addr.city || addr.town || addr.village || addr.county || '';
  } catch(e) {}
 
- const weatherResp = await fetch(
- `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility,weather_code&wind_speed_unit=ms&timezone=auto`
- );
+ const weatherResp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility,weather_code&wind_speed_unit=ms&timezone=auto`);
  const wd = await weatherResp.json();
  const cur = wd.current;
 
@@ -1011,9 +660,7 @@ function fetchWeather() {
  else visStr = `Sumu / erittäin heikko (${visM} m)`;
  document.getElementById('nakyvyys').value = visStr;
 
- if (placeName) {
- document.getElementById('vesialue').value = placeName;
- }
+ if (placeName) document.getElementById('vesialue').value = placeName;
 
  status.className = 'gps-status ok';
  status.textContent = `✓ Päivitetty ${new Date().toLocaleTimeString('fi-FI', {hour:'2-digit',minute:'2-digit'})}`;
@@ -1025,13 +672,9 @@ function fetchWeather() {
  btn.disabled = false;
  }, (err) => {
  status.className = 'gps-status error';
- if (err.code === 1) {
- status.textContent = 'Lupa evätty. iPad: Asetukset → Tietosuoja → Sijaintipalvelut → Safari → Kysy tai Salli.';
- } else if (err.code === 2) {
- status.textContent = 'Sijaintia ei saatu — siirry ulos tai yritä uudelleen.';
- } else {
- status.textContent = `GPS-virhe (koodi ${err.code}) — yritä uudelleen.`;
- }
+ if (err.code === 1) status.textContent = 'Lupa evätty. iPad: Asetukset → Tietosuoja → Sijaintipalvelut → Safari → Kysy tai Salli.';
+ else if (err.code === 2) status.textContent = 'Sijaintia ei saatu — siirry ulos tai yritä uudelleen.';
+ else status.textContent = `GPS-virhe (koodi ${err.code}) — yritä uudelleen.`;
  btn.disabled = false;
  }, { timeout: 15000, maximumAge: 60000 });
 }
@@ -1039,30 +682,17 @@ function fetchWeather() {
 function saveLocal() {
  try {
  const data = {
- state,
- paatos,
- fields: {},
- savedData
+ state, paatos, fields: {}, savedData,
+ icc: getICCValue(),
+ vuokravene: getVuokraveneValue()
  };
- ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail',
- 'alusNimi','rekisteri','alustyyppi','moottori',
- 'paiva','vesialue','tuuli','nakyvyys',
- 'vahvuudet','kehitettavaa',
- 'vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
+ ['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','alusNimi','rekisteri','alustyyppi','moottori','paiva','vesialue','tuuli','nakyvyys','vahvuudet','kehitettavaa','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
  const el = document.getElementById(id);
  if (el) data.fields[id] = el.value;
  });
- data.icc = getCheckbox('iccCheckbox');
- data.vuokravene = getCheckbox('vuokraveneCheckbox');
  localStorage.setItem('tutkintoraportti', JSON.stringify(data));
  } catch(e) {}
 }
-
-const VASTAANOTTAJA_DEFAULTS = {
- vastaanottajaNimi: 'Jarmo Aaltonen',
- vastaanottajaEmail: 'jacke.seilaa@gmail.com',
- vastaanottajaPuh: '+358 44 3808569'
-};
 
 function loadLocal() {
  try {
@@ -1080,28 +710,36 @@ function loadLocal() {
  if (el) el.value = val;
  }
  }
- if (data.icc) document.getElementById('iccCheckbox').checked = true;
- if (data.vuokravene) document.getElementById('vuokraveneCheckbox').checked = true;
+ if (data.icc) {
+ document.getElementById('iccM').checked = data.icc.includes('M');
+ document.getElementById('iccS').checked = data.icc.includes('S');
+ }
+ if (data.vuokravene) {
+ document.getElementById('vuokraveneM').checked = data.vuokravene.includes('M');
+ document.getElementById('vuokraveneS').checked = data.vuokravene.includes('S');
+ }
  if (data.savedData) savedData = data.savedData;
  } catch(e) {}
-
- for (const [id, def] of Object.entries(VASTAANOTTAJA_DEFAULTS)) {
+ 
+ const defaults = {
+ vastaanottajaNimi: 'Jarmo Aaltonen',
+ vastaanottajaEmail: 'jacke.seilaa@gmail.com',
+ vastaanottajaPuh: '+358 44 3808569'
+ };
+ for (const [id, def] of Object.entries(defaults)) {
  const el = document.getElementById(id);
  if (el && !el.value) el.value = def;
  }
 }
 
-// Enter-logiikka lomakkeen kentille
 const inputFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"]');
 inputFields.forEach((el, idx) => {
  el.addEventListener('keydown', (e) => {
  if (e.key === 'Enter') {
  e.preventDefault();
- // Siirry seuraavaan kenttään
  if (idx < inputFields.length - 1) {
  inputFields[idx + 1].focus();
  } else {
- // Viimeisessä kentässä: sulkea näppäimistö
  el.blur();
  }
  }
