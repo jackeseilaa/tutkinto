@@ -1,6 +1,6 @@
 // Tutkintoraportit SNOP: vastaanottaa raportit sovelluksesta, tallentaa Sheetsiin
 // ja Driveen, ja tekee hyväksytystä tutkinnosta todistus-PDF:n Slides-pohjasta.
-const BACKEND_VERSION = '2.2';
+const BACKEND_VERSION = '2.3';
 const SHEET_NAME = 'Tutkinnot';
 const FOLDER_NAME = 'Tutkintoraportit';        // JSON-varmuuskopiot
 const PDF_FOLDER_NAME = 'Todistukset SNOP';     // valmiit todistus-PDF:t
@@ -68,7 +68,7 @@ function makeCertificates(rec) {
       setPlaceAndDate(pres, paikkaAika);
       if (laji === 'S') {
         pres.replaceAllText('(M)', '(S)');
-        pres.replaceAllText('moottoriveneellä', 'purjeveneellä');
+        pres.replaceAllText('moottoriveneell\u00e4', 'purjeveneell\u00e4');
       }
       pres.saveAndClose();
       const pdfName = 'Vuokraveneen kuljettaja ' + laji + ' - ' + nimi + ' - ' + (row[12] || '') + '.pdf';

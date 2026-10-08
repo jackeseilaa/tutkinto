@@ -307,8 +307,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.2';
-const APP_BUILD = '8.10.2026 klo 08:40';
+const APP_VERSION = '2.3';
+const APP_BUILD = '8.10.2026 klo 09:05';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
@@ -316,7 +316,7 @@ const sections = {
 1: ["Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.", "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).", "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.", "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."],
 2: ["Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).", "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).", "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.", "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."],
 3: ["Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).", "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.", "Liukuun nousu: Liukuun nousu on hallittu, ja veneen asento on vakaa.", "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.", "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen ilman, että peräaalto vyöryy takakannen yli.", "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille).", "Veneen kulkuasento: Moottoritrimmin säätö nopeuden mukaan (keulan nosto/lasku), sivuittaiskallistuman korjaaminen ja nousukynnyksen helpottaminen trimmitasoilla."],
-4: ["Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.", "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.", "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.", "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.", "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta)."],
+4: ["Purjeiden nosto: Vene suunnattu vastatuuleen, nosto sujunut ilman ongelmia.", "Vastakäännös: Selkeät komennot, keulapurjeen jalus vapautettu ja kiristetty oikeaan aikaan.", "Jiippi: Puomi hallittu (keskitetty) ja käännös suoritettu rauhallisesti.", "Reivaus: Purjepinta-alaa pienennetty sujuvasti veneen ollessa liikkeellä. Tehdään aina.", "Trimmaus: Purjeet säädetty oikein eri tuulensuunnilla (ei jatkuvaa lepatusta).", "Koneen käyttö: Vaihteiden ja kaasun käyttö on pehmeää (ei ryntäyttämistä ja vaihtamista suoraan eteen–taakse).", "Ohjailu: Veneen kääntösäteen hallinta eri nopeuksilla ja potkurivirran hyödyntäminen ahtaissa tiloissa.", "Aallokon kohtaaminen: Kurssin ja nopeuden sovittaminen vallitsevaan aallokkoon niin, ettei vene hakkaa tai kastu tarpeettomasti.", "Peräaaltojen huomioiminen: Oman peräaallon hallinta muiden vesilläliikkujien huomioimiseksi, nopeuden hidastaminen.", "Kyky pysäyttää veneen liike hallitusti haluttuun pisteeseen (esim. poijulle tai laiturille)."],
 5: ["Paikanmääritys: Merkitty sijainti kartalle käyttäen merimerkkejä tai suuntimia.", "Väistämissäännöt: Tunnistettu muut alukset ja toimittu kansainvälisten meriteiden sääntöjen mukaan hyvissä ajoin.", "Lähestymissuunnitelma: Satamaan saavuttaessa kerrottu suunnitelman mukaiset syvyydet, merimerkit ja suuntimat ääneen."],
 6: ["Hälytys: Huudettu välittömästi \"Henkilö yli laidan!\" ja osoitetty tähystäjä.", "Lähestyminen: Vene ohjattu uhrin tuulen alapuolelle / moottoriveneellä myös tuulen yläpuolelle ja lähestyminen ajelehtimalla.", "Pysäytys: Vene pysähtynyt uhrin viereen niin, että hänet saadaan nostettua keskilaivasta.", "Turvallisuus: Moottori laitettu vapaalle heti, kun uhri on veneen välittömässä läheisyydessä."]
 };
@@ -806,7 +806,7 @@ const raw = localStorage.getItem('tutkintoraportti');
 const data = raw ? JSON.parse(raw) : {};
 if (data.state) {
 for (const [sec, arr] of Object.entries(data.state)) {
-if (state[sec]) state[sec] = arr;
+if (state[sec]) state[sec] = arr.concat(new Array(Math.max(0, sections[sec].length - arr.length)).fill(false));
 }
 }
 if (data.paatos) setPaatos(data.paatos);
