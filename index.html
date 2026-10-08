@@ -98,7 +98,26 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <button class="btn btn-email" onclick="openPdfFolder()">📁 Todistukset (PDF)</button>
 </div>
 <div class="fields-section">
-<div class="section-header">KOKELAAN JA ALUKSEN TIEDOT</div>
+<div class="section-header">TUTKINNONTARKASTAJA, KOKELAAN JA ALUKSEN TIEDOT</div>
+<div class="field-group">
+<div class="field-group-title">Tutkinnontarkastaja</div>
+<div class="field-row">
+<label>Valitse tarkastaja (todistukseen tulee hänen nimensä ja allekirjoituksensa)</label>
+<select id="tarkastajaValinta" onchange="onInspectorSelect()"><option value="">Muu (täytä itse)</option></select>
+</div>
+<div class="field-row">
+<label>Nimi</label>
+<input type="text" id="vastaanottajaNimi" placeholder="Etunimi Sukunimi">
+</div>
+<div class="field-row">
+<label>Sähköposti</label>
+<input type="email" id="vastaanottajaEmail" placeholder="sähköposti">
+</div>
+<div class="field-row">
+<label>Puhelinnumero</label>
+<input type="text" id="vastaanottajaPuh" placeholder="+358 xx xxx xxxx">
+</div>
+</div>
 <div class="field-group">
 <div class="field-group-title">Kokelas</div>
 <div class="field-row">
@@ -255,25 +274,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <button class="paatos-btn" id="btnUusinta" onclick="setPaatos('uusinta')">⟲ Uusinta vaaditaan</button>
 </div>
 </div>
-<div class="field-group">
-<div class="field-group-title">Tutkinnontarkastaja</div>
-<div class="field-row">
-<label>Valitse tarkastaja (todistukseen tulee hänen nimensä ja allekirjoituksensa)</label>
-<select id="tarkastajaValinta" onchange="onInspectorSelect()"><option value="">Muu (täytä itse)</option></select>
-</div>
-<div class="field-row">
-<label>Nimi</label>
-<input type="text" id="vastaanottajaNimi" placeholder="Etunimi Sukunimi">
-</div>
-<div class="field-row">
-<label>Sähköposti</label>
-<input type="email" id="vastaanottajaEmail" placeholder="sähköposti">
-</div>
-<div class="field-row">
-<label>Puhelinnumero</label>
-<input type="text" id="vastaanottajaPuh" placeholder="+358 xx xxx xxxx">
-</div>
-</div>
+
 </div>
 
 <div class="action-bar">
@@ -319,8 +320,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.8';
-const APP_BUILD = '8.10.2026 klo 12:10';
+const APP_VERSION = '2.9';
+const APP_BUILD = '8.10.2026 klo 12:40';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
