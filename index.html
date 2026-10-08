@@ -271,8 +271,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <textarea id="vahvuudet" placeholder="Kokelaan vahvuudet tutkintosuorituksessa..."></textarea>
 </div>
 <div class="field-group">
-<div class="field-group-title">Kehitettävää</div>
-<textarea id="kehitettavaa" placeholder="Kehittämistä vaativat osaalueet..."></textarea>
+<div class="field-group-title">Huomioita</div>
+<textarea id="kehitettavaa" placeholder="Muita huomioita tutkintosuorituksesta..."></textarea>
 </div>
 <div class="field-group">
 <div class="field-group-title">Päätös</div>
@@ -327,8 +327,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.13';
-const APP_BUILD = '8.10.2026 klo 15:10';
+const APP_VERSION = '2.14';
+const APP_BUILD = '8.10.2026 klo 16:00';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
@@ -758,7 +758,7 @@ ARVIOINTI
 Vahvuudet:
 ${vahvuudet || '-'}
 
-Kehitettävää:
+Huomioita:
 ${kehitettavaa || '-'}
 
 PÄÄTÖS: ${paatosText}

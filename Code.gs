@@ -1,6 +1,6 @@
 // Tutkintoraportit SNOP: vastaanottaa raportit sovelluksesta, tallentaa Sheetsiin,
 // tekee hyväksytystä tutkinnosta todistus-PDF:n (Slides-pohja) ja tulostettavan tutkintoraportti-PDF:n.
-const BACKEND_VERSION = '2.10';
+const BACKEND_VERSION = '2.12';
 const SHEET_NAME = 'Tutkinnot';
 const REPORT_FOLDER_NAME = 'Tutkintoraportit';        // tulostettavat tutkintoraportti-PDF:t
 const JSON_FOLDER_NAME = 'Tutkintoraportit data';     // JSON-varmuuskopiot
@@ -12,7 +12,7 @@ const INSPECTOR_SHEET = 'Tarkastajat';                // tutkinnontarkastajat: n
 const SIGNATURE_FOLDER_NAME = 'Allekirjoitukset';     // allekirjoituskuvat (vain skriptin käyttöön)
 
 const HEADERS = ['Etunimi', 'Sukunimi', 'Katuosoite', 'Postinumero', 'Postitoimipaikka', 'Syntymäaika', 'Sähköposti',
-  'Tutkintopaikka', 'Tarkastaja', 'ICC', 'Vuokravene', 'Todistus (PDF)', 'Tutkinto pvm', 'ID', 'Tutkintoraportti (PDF)'];
+  'Tutkintopaikka', 'Tarkastaja', 'ICC', 'Vuokravene', 'Todistus (PDF)', 'Tutkinto pvm', 'ID', 'Tutkintoraportti (PDF)', 'Puhelin'];
 
 const SECTION_TITLES = {
   1: '1. Valmistelut ja turvallisuus',
@@ -42,6 +42,8 @@ function doPost(e) {
     // A-K tiedot, L = todistus (täytetään), M = pvm, N = id, O = tutkintoraportti (täytetään)
     sh.appendRow(rec.row.concat([rec.id, '']));
     const rowNum = sh.getLastRow();
+    // kokelaan puhelinnumero sarakkeeseen P (16), tekstinä ettei "+358..." tulkita kaavaksi
+    sh.getRange(rowNum, 16).setNumberFormat('@').setValue(String(rec.report.puhelin || ''));
     // appendRow muuntaa "00140" -> 140 ja "08.10.2026" -> päivämäärä; kirjoitetaan nämä uudelleen tekstinä
     [4, 6, 13].forEach(function (c) {
       sh.getRange(rowNum, c).setNumberFormat('@').setValue(String(rec.row[c - 1] == null ? '' : rec.row[c - 1]));
@@ -87,7 +89,12 @@ function doPost(e) {
 function ensureHeader(sh) {
   // Tekstimuoto: postinumero (D), syntymäaika (F), tutkinto pvm (M), id (N) – etunollat ja päivämäärät säilyvät sellaisinaan
   [4, 6, 13, 14].forEach(function (c) { sh.getRange(1, c, sh.getMaxRows(), 1).setNumberFormat('@'); });
-  if (sh.getLastRow() > 0 && sh.getRange(1, 1).getValue() === HEADERS[0]) return;
+  [4, 6, 13, 14, 16].forEach(function (c) { sh.getRange(1, c, sh.getMaxRows(), 1).setNumberFormat('@'); });   // 16 = puhelin
+  if (sh.getLastRow() > 0 && sh.getRange(1, 1).getValue() === HEADERS[0]) {
+    // vanhaan taulukkoon lisätään puuttuva Puhelin-otsikko (P)
+    if (!sh.getRange(1, 16).getValue()) sh.getRange(1, 16).setValue(HEADERS[15]).setFontWeight('bold').setBackground('#0a4272').setFontColor('#ffffff');
+    return;
+  }
   if (sh.getLastRow() > 0) sh.insertRowBefore(1);
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold').setBackground('#0a4272').setFontColor('#ffffff');
   sh.setFrozenRows(1);
@@ -345,7 +352,7 @@ function reportHtml(rec) {
       warnItems.map(function (w) { return '<tr><td class="box warn">[!]</td><td class="warntxt">' + w + '</td></tr>'; }).join('') + '</table></div>' : '') +
     '<div class="keep"><h2>Arviointi</h2>' +
     '<h3>Vahvuudet</h3><div class="box2">' + (esc(r.vahvuudet) || '–') + '</div>' +
-    '<h3>Kehitettävää</h3><div class="box2">' + (esc(r.kehitettavaa) || '–') + '</div>' +
+    '<h3>Huomioita</h3><div class="box2">' + (esc(r.kehitettavaa) || '–') + '</div>' +
     '<h3>Päätös</h3><p>' + paatos + '</p></div>' +
     '<h2>Tarkastaja</h2><table>' + kv('Nimi', r.vastaanottajaNimi) + kv('Sähköposti', r.vastaanottajaEmail) + kv('Puhelin', r.vastaanottajaPuh) + '</table>' +
     '<p class="foot">Raportti luotu ' + esc(Utilities.formatDate(new Date(), 'Europe/Helsinki', 'd.M.yyyy HH:mm')) + ' SNOP Tutkintoraportti -sovelluksella.</p>' +
