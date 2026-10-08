@@ -1,11 +1,12 @@
 // Tutkintoraportit SNOP: vastaanottaa raportit sovelluksesta, tallentaa Sheetsiin,
 // tekee hyväksytystä tutkinnosta todistus-PDF:n (Slides-pohja) ja tulostettavan tutkintoraportti-PDF:n.
-const BACKEND_VERSION = '2.6';
+const BACKEND_VERSION = '2.7';
 const SHEET_NAME = 'Tutkinnot';
 const REPORT_FOLDER_NAME = 'Tutkintoraportit';        // tulostettavat tutkintoraportti-PDF:t
 const JSON_FOLDER_NAME = 'Tutkintoraportit data';     // JSON-varmuuskopiot
 const PDF_FOLDER_NAME = 'Todistukset SNOP';           // valmiit todistus-PDF:t
 const TEMPLATE_ID = '1m2NMN1QQvPnHYrQTFiiz9lxyA0fSFErNcO5npsjICeY'; // Slides-pohja (vuokraveneen kuljettaja, M)
+const ICC_TEMPLATE_ID = '1RylvAaOZxjbUps0iRZjjERW_RBdp6cfHlU5_dnpJbSc'; // Slides-pohja (kansainvälinen huviveneenkuljettajankirja, ICC)
 
 const HEADERS = ['Etunimi', 'Sukunimi', 'Katuosoite', 'Postinumero', 'Postitoimipaikka', 'Syntymäaika', 'Sähköposti',
   'Tutkintopaikka', 'Tarkastaja', 'ICC', 'Vuokravene', 'Todistus (PDF)', 'Tutkinto pvm', 'ID', 'Tutkintoraportti (PDF)'];
@@ -58,19 +59,20 @@ function doPost(e) {
     }
 
     // Todistus-PDF (vain hyväksytty + vuokravene valittu)
-    let pdfUrls = [], pdfError = '';
+    let pdfUrls = [], pdfs = [], pdfError = '';
     try {
-      if (rec.report.paatos === 'hyvaksytty' && rec.report.vuokravene) {
+      if (rec.report.paatos === 'hyvaksytty' && (rec.report.vuokravene || rec.report.icc)) {
         const made = makeCertificates(rec);
         pdfUrls = made.map(function (m) { return m.url; });
-        setLinks(sh.getRange(rowNum, 12), made.map(function (m) { return ['Todistus ' + m.laji, m.url]; }));
+        pdfs = made.map(function (m) { return { label: m.label, url: m.url }; });
+        setLinks(sh.getRange(rowNum, 12), made.map(function (m) { return [m.label, m.url]; }));
       }
     } catch (err) {
       pdfError = String(err);
       sh.getRange(rowNum, 12).setValue('PDF-virhe: ' + pdfError);
     }
 
-    return out({ ok: true, pdfUrls: pdfUrls, pdfError: pdfError, reportUrl: reportUrl, reportError: reportError });
+    return out({ ok: true, pdfUrls: pdfUrls, pdfs: pdfs, pdfError: pdfError, reportUrl: reportUrl, reportError: reportError });
   } catch (err) {
     return out({ ok: false, error: String(err) });
   } finally {
@@ -135,7 +137,7 @@ function makeCertificates(rec) {
   const outFolder = getFolder(PDF_FOLDER_NAME);
   const made = [];
 
-  r.vuokravene.split('').forEach(function (laji) {          // 'M' ja/tai 'S'
+  (r.vuokravene || '').split('').forEach(function (laji) {          // 'M' ja/tai 'S'
     const copy = DriveApp.getFileById(TEMPLATE_ID).makeCopy('tmp_' + rec.id + '_' + laji);
     try {
       const pres = SlidesApp.openById(copy.getId());
@@ -149,12 +151,48 @@ function makeCertificates(rec) {
       pres.saveAndClose();
       const pdfName = 'Vuokraveneen kuljettaja ' + laji + ' - ' + nimi + ' - ' + (row[12] || '') + '.pdf';
       const pdf = outFolder.createFile(copy.getAs('application/pdf').setName(pdfName));
-      made.push({ laji: laji, url: pdf.getUrl() });
+      made.push({ laji: laji, label: 'Todistus ' + laji, url: pdf.getUrl() });
     } finally {
       copy.setTrashed(true);
     }
   });
+
+  // Kansainvälinen huviveneenkuljettajankirja (ICC): yksi todistus, M ja/tai S ruksattuna
+  if (r.icc) {
+    const copy = DriveApp.getFileById(ICC_TEMPLATE_ID).makeCopy('tmp_' + rec.id + '_ICC');
+    try {
+      const pres = SlidesApp.openById(copy.getId());
+      pres.replaceAllText('Etunimi Sukunimi', nimi);
+      pres.replaceAllText('12.3.4567', syntyma);
+      pres.replaceAllText('Paikka ja aika', paikkaAika);
+      tickBoxes(pres, r.icc);
+      pres.saveAndClose();
+      const pdfName = 'ICC ' + r.icc + ' - ' + nimi + ' - ' + (row[12] || '') + '.pdf';
+      const pdf = outFolder.createFile(copy.getAs('application/pdf').setName(pdfName));
+      made.push({ laji: 'ICC', label: 'ICC-todistus', url: pdf.getUrl() });
+    } finally {
+      copy.setTrashed(true);
+    }
+  }
   return made;
+}
+
+// Ruksaa ICC-todistuksen valintaruudut: icc = 'M', 'S' tai 'MS'.
+function tickBoxes(pres, icc) {
+  pres.getSlides()[0].getShapes().forEach(function (sh) {
+    let paras;
+    try { paras = sh.getText().getParagraphs(); } catch (e) { return; }
+    paras.forEach(function (p) {
+      const txt = p.getRange().asString();
+      let want = null;
+      if (txt.indexOf('moottorialukselle') !== -1) want = icc.indexOf('M') !== -1;
+      else if (txt.indexOf('purjealukselle') !== -1) want = icc.indexOf('S') !== -1;
+      if (want === null) return;
+      const box = p.getRange().getRange(0, 1);
+      box.setText(want ? '\u2612' : '\u2610');
+      box.getTextStyle().setFontFamily('Arial Unicode MS');
+    });
+  });
 }
 
 // Korvaa 'Paikka ja aika' -tekstin, levittää kentän ja keskittää, ettei rivi mene allekirjoituksen päälle.
