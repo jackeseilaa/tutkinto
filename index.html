@@ -271,7 +271,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <div class="field-group-title">Päätös</div>
 <div class="paatos-row">
 <button class="paatos-btn" id="btnHyvaksytty" onclick="decide('hyvaksytty')">✓ Hyväksytty<br><span style="font-size:0.7rem;font-weight:400">tallentaa ja tekee todistuksen</span></button>
-<button class="paatos-btn" id="btnUusinta" onclick="decide('uusinta')">✗ Hylätty<br><span style="font-size:0.7rem;font-weight:400">tallentaa, uusinta vaaditaan</span></button>
+<button class="paatos-btn" id="btnUusinta" onclick="decide('uusinta')">⟲ Uusinta vaaditaan<br><span style="font-size:0.7rem;font-weight:400">tallentaa, ei todistusta</span></button>
 </div>
 </div>
 
@@ -320,8 +320,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.11';
-const APP_BUILD = '8.10.2026 klo 14:00';
+const APP_VERSION = '2.12';
+const APP_BUILD = '8.10.2026 klo 14:30';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
@@ -396,11 +396,11 @@ saveLocal();
 // Päätöspainike tallentaa koko raportin heti (hyväksytty -> myös todistus, hylätty -> vain raportti)
 function decide(val) {
 if (saving) { showStatus('Tallennus on kesken, odota hetki.', 'info'); return; }
-if (!getField('kokelasNimi')) { showStatus('Kirjoita kokelaan nimi ennen päätöstä.', 'error'); return; }
+if (!validateRequired()) return;
 const nimi = getField('kokelasNimi');
 const teksti = val === 'hyvaksytty'
  ? 'HYVÄKSYTTY – tallennetaan raportti ja tehdään todistus'
- : 'HYLÄTTY (uusinta vaaditaan) – tallennetaan raportti, todistusta ei tehdä';
+ : 'UUSINTA VAADITAAN – tallennetaan raportti, todistusta ei tehdä';
 if (!confirm(nimi + '\n\n' + teksti + '.\n\nJatketaanko?')) return;
 setPaatos(val);
 confirmSaveData();
@@ -454,9 +454,18 @@ return [osoiteStr, '', ''];
 
 let saving = false;
 
+// Pakolliset tiedot ennen tallennusta: kokelaan nimi ja syntymäaika (pp.kk.vvvv)
+function validateRequired() {
+ if (!getField('kokelasNimi')) { showStatus('Kirjoita kokelaan nimi ennen tallennusta.', 'error'); document.getElementById('kokelasNimi').focus(); return false; }
+ const s = getField('syntymaika');
+ if (!s) { showStatus('Kirjoita kokelaan syntymäaika ennen tallennusta.', 'error'); document.getElementById('syntymaika').focus(); return false; }
+ if (!/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(s)) { showStatus('Syntymäaika muodossa pp.kk.vvvv, esim. 14.7.1962.', 'error'); document.getElementById('syntymaika').focus(); return false; }
+ return true;
+}
+
 function showPreview() {
 if (saving) { showStatus('Tallennus on kesken, odota hetki.', 'info'); return; }
-if (!getField('kokelasNimi')) { showStatus('Kirjoita kokelaan nimi ennen tallennusta.', 'error'); return; }
+if (!validateRequired()) return;
 const kokelasNimi = getField('kokelasNimi');
 const syntymaika = getField('syntymaika');
 const osoite = getField('osoite');
@@ -647,7 +656,7 @@ box.innerHTML = lastResults.map(r => {
  if (r.pdfs && r.pdfs.length) h += r.pdfs.map(p => `<a href="${p.url}" target="_blank">📄 Avaa ${p.label}</a>`).join('<br>');
  else if (r.pdfUrls.length) h += r.pdfUrls.map((u, i) => `<a href="${u}" target="_blank">📄 Avaa todistus-PDF${r.pdfUrls.length > 1 ? ' ' + (i + 1) : ''}</a>`).join('<br>');
  else if (r.pdfError) h += `⚠️ Todistuksen teko epäonnistui: ${r.pdfError}`;
- else if (r.paatos === 'uusinta') h += 'Hylätty: raportti tallennettu, todistusta ei tehdä.';
+ else if (r.paatos === 'uusinta') h += 'Uusinta vaaditaan: raportti tallennettu, todistusta ei tehdä.';
  else h += 'Todistusta ei tehty (vaatii päätöksen "Hyväksytty" sekä vuokraveneen tai ICC:n M/S -valinnan).';
  return h;
 }).join('<hr style="margin:10px 0">');
