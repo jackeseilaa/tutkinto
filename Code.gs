@@ -1,6 +1,6 @@
 // Tutkintoraportit SNOP: vastaanottaa raportit sovelluksesta, tallentaa Sheetsiin,
 // tekee hyväksytystä tutkinnosta todistus-PDF:n (Slides-pohja) ja tulostettavan tutkintoraportti-PDF:n.
-const BACKEND_VERSION = '2.8';
+const BACKEND_VERSION = '2.9';
 const SHEET_NAME = 'Tutkinnot';
 const REPORT_FOLDER_NAME = 'Tutkintoraportit';        // tulostettavat tutkintoraportti-PDF:t
 const JSON_FOLDER_NAME = 'Tutkintoraportit data';     // JSON-varmuuskopiot
@@ -191,7 +191,8 @@ function getInspectors() {
     .filter(function (r) { return String(r[0]).trim(); })
     .map(function (r) {
       const m = /[-\w]{25,}/.exec(String(r[3]));
-      return { nimi: String(r[0]).trim(), email: String(r[1]).trim(), puh: String(r[2]).trim(), sigId: m ? m[0] : '' };
+      const clean = function (v) { v = String(v).trim(); return v.charAt(0) === '#' ? '' : v; };   // #ERROR! ym. -> tyhjä
+      return { nimi: String(r[0]).trim(), email: clean(r[1]), puh: clean(r[2]), sigId: m ? m[0] : '' };
     });
 }
 
@@ -211,6 +212,19 @@ function applyInspector(pres, name) {
     }
     img.remove();
   });
+}
+
+// Tekee Tarkastajat-välilehden puhelin- ja sähköpostisarakkeista tekstimuotoisia, ettei "+358 ..." tulkita kaavaksi (#ERROR!).
+// Korjaa samalla Jarmon puhelinnumeron. Voi ajaa uudelleen turvallisesti.
+function fixInspectorSheet() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(INSPECTOR_SHEET);
+  if (!sh) return;
+  sh.getRange(1, 2, sh.getMaxRows(), 2).setNumberFormat('@');     // B = sähköposti, C = puhelin
+  for (let r = 2; r <= sh.getLastRow(); r++) {
+    if (String(sh.getRange(r, 1).getValue()).trim().toLowerCase() === 'jarmo aaltonen') {
+      sh.getRange(r, 3).setValue('+358 44 3808569');
+    }
+  }
 }
 
 // Aja kerran editorissa: luo välilehden 'Tarkastajat' ja lisää Jarmon (allekirjoitus otetaan todistuspohjasta).
@@ -236,6 +250,7 @@ function setupInspectors() {
     } catch (e) { Logger.log('Allekirjoituksen tallennus epäonnistui: ' + e); }
     sh.appendRow(['Jarmo Aaltonen', 'jacke.seilaa@gmail.com', '+358 44 3808569', sigId]);
   }
+  fixInspectorSheet();
 }
 
 // Ruksaa ICC-todistuksen valintaruudut: icc = 'M', 'S' tai 'MS'.

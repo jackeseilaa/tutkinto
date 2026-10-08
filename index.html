@@ -320,8 +320,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.9';
-const APP_BUILD = '8.10.2026 klo 12:40';
+const APP_VERSION = '2.10';
+const APP_BUILD = '8.10.2026 klo 13:20';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
@@ -469,6 +469,11 @@ let html = `
 <div class="modal-field"><div class="modal-field-label">ICC</div><div class="modal-field-value">${icc}</div></div>
 <div class="modal-field"><div class="modal-field-label">VUOKRAVENE</div><div class="modal-field-value">${vuokravene}</div></div>
 <div class="modal-field"><div class="modal-field-label">TUTKINTO PVM</div><div class="modal-field-value">${paiva || '—'}</div></div>
+<div class="modal-field"><div class="modal-field-label">PÄÄTÖS</div><div class="modal-field-value">${paatos === 'hyvaksytty' ? '✓ Hyväksytty' : paatos === 'uusinta' ? '⟲ Uusinta vaaditaan' : '(ei valittu)'}</div></div>
+<div class="modal-field"><div class="modal-field-label">TODISTUS</div><div class="modal-field-value">${
+  paatos !== 'hyvaksytty' ? '✗ Ei tehdä todistusta (päätös ei ole "Hyväksytty")'
+  : (getVuokraveneValue() || getICCValue()) ? '✓ Tehdään: ' + [getVuokraveneValue() ? 'vuokravene ' + getVuokraveneValue() : '', getICCValue() ? 'ICC ' + getICCValue() : ''].filter(Boolean).join(' + ')
+  : '✗ Ei tehdä todistusta (valitse vuokravene tai ICC M/S)'}</div></div>
 `;
 
 document.getElementById('previewContent').innerHTML = html;
@@ -941,7 +946,9 @@ function renderInspectors() {
  let saved = '';
  try { saved = localStorage.getItem('tarkastajaValinta') || ''; } catch (e) {}
  sel.innerHTML = '<option value="">Muu (täytä itse)</option>' + inspectors.map(i => `<option value="${i.nimi}">${i.nimi}</option>`).join('');
+ const current = getField('vastaanottajaNimi');
  if (inspectors.some(i => i.nimi === saved)) sel.value = saved;
+ else if (inspectors.some(i => i.nimi === current)) sel.value = current;   // tallennetut tiedot vastaavat listan tarkastajaa
 }
 function onInspectorSelect() {
  const v = document.getElementById('tarkastajaValinta').value;
