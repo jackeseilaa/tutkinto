@@ -1,6 +1,6 @@
 // Tutkintoraportit SNOP: vastaanottaa raportit sovelluksesta, tallentaa Sheetsiin,
 // tekee hyväksytystä tutkinnosta todistus-PDF:n (Slides-pohja) ja tulostettavan tutkintoraportti-PDF:n.
-const BACKEND_VERSION = '2.9';
+const BACKEND_VERSION = '2.10';
 const SHEET_NAME = 'Tutkinnot';
 const REPORT_FOLDER_NAME = 'Tutkintoraportit';        // tulostettavat tutkintoraportti-PDF:t
 const JSON_FOLDER_NAME = 'Tutkintoraportit data';     // JSON-varmuuskopiot
@@ -299,6 +299,7 @@ function reportHtml(rec) {
   const icc = (r.icc || '').split('').map(function (c) { return c === 'M' ? 'moottorialus' : 'purjealus'; }).join(' + ');
 
   let secs = '';
+  const warnItems = [];
   [1, 2, 3, 4, 5, 6].forEach(function (n) {
     const items = (r.checks && r.checks[n]) || [];
     const anyChecked = items.some(function (i) { return i.rastitettu; });
@@ -306,11 +307,14 @@ function reportHtml(rec) {
     const sail = (r.vuokravene || '').indexOf('S') !== -1 || (r.icc || '').indexOf('S') !== -1;
     if ((n === 3 && !anyChecked && !motor) || (n === 4 && !anyChecked && !sail)) return;
     const done = items.filter(function (i) { return i.rastitettu; }).length;
-    secs += '<h3>' + esc(SECTION_TITLES[n]) + ' <span class="cnt">(' + done + ' / ' + items.length + ')</span></h3><table class="chk">';
+    const warn = items.filter(function (i) { return i.tila === 'huomio'; }).length;
+    secs += '<h3>' + esc(SECTION_TITLES[n]) + ' <span class="cnt">(' + done + ' / ' + items.length + (warn ? ', kehitettävää: ' + warn : '') + ')</span></h3><table class="chk">';
     items.forEach(function (i) {
       const idx = i.teksti.indexOf(':');
       const t = idx > 0 && idx < 60 ? '<b>' + esc(i.teksti.slice(0, idx + 1)) + '</b>' + esc(i.teksti.slice(idx + 1)) : esc(i.teksti);
-      secs += '<tr><td class="box ' + (i.rastitettu ? 'yes' : 'no') + '">' + (i.rastitettu ? '[X]' : '[&nbsp;&nbsp;]') + '</td><td>' + t + '</td></tr>';
+      const w = i.tila === 'huomio';
+      if (w) warnItems.push(t);
+      secs += '<tr><td class="box ' + (w ? 'warn' : i.rastitettu ? 'yes' : 'no') + '">' + (w ? '[!]' : i.rastitettu ? '[X]' : '[&nbsp;&nbsp;]') + '</td><td' + (w ? ' class="warntxt"' : '') + '>' + t + '</td></tr>';
     });
     secs += '</table>';
   });
@@ -325,7 +329,7 @@ function reportHtml(rec) {
     'h3{font-size:11pt;color:#0a4272;margin:10px 0 4px 0;border-bottom:1px solid #c5d5e8;page-break-after:avoid;} .cnt{color:#6c7a8a;font-weight:normal;font-size:9.5pt;}' +
     'table{border-collapse:collapse;width:100%;} td{padding:2px 6px;vertical-align:top;}' +
     'td.k{width:32%;color:#4a5a6a;} .chk td{border-bottom:1px solid #eef2f7;} td.box{width:34px;font-family:Courier New,monospace;white-space:nowrap;}' +
-    'td.yes{color:#1b7a36;font-weight:bold;} td.no{color:#9aa7b4;}' +
+    'td.yes{color:#1b7a36;font-weight:bold;} td.no{color:#9aa7b4;} td.warn{color:#b02a37;font-weight:bold;} td.warntxt{color:#b02a37;}' +
     '.ok{color:#1b7a36;font-weight:bold;font-size:14pt;} .bad{color:#b02a37;font-weight:bold;font-size:14pt;}' +
     '.box2{border:1px solid #c5d5e8;padding:6px 8px;min-height:30px;} .foot{margin-top:18px;color:#6c7a8a;font-size:9pt;}' +
     '</style></head><body>' +
@@ -337,6 +341,8 @@ function reportHtml(rec) {
       kv('Vesialue / sijainti', r.vesialue) + kv('Tuuli', r.tuuli) + kv('Näkyvyys', r.nakyvyys) +
       kv('Vuokravene', lajit) + kv('ICC', icc) + kv('Tarkastaja', r.vastaanottajaNimi) + '</table>' +
     '<h2>Suoritetut tehtävät</h2>' + secs +
+    (warnItems.length ? '<div class="keep"><h2>Kehitettävää / hylkäysperusteet (punaiset kohdat)</h2><table class="chk">' +
+      warnItems.map(function (w) { return '<tr><td class="box warn">[!]</td><td class="warntxt">' + w + '</td></tr>'; }).join('') + '</table></div>' : '') +
     '<div class="keep"><h2>Arviointi</h2>' +
     '<h3>Vahvuudet</h3><div class="box2">' + (esc(r.vahvuudet) || '–') + '</div>' +
     '<h3>Kehitettävää</h3><div class="box2">' + (esc(r.kehitettavaa) || '–') + '</div>' +
