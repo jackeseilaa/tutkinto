@@ -1,12 +1,15 @@
 // Tutkintoraportit SNOP: vastaanottaa raportit sovelluksesta, tallentaa Sheetsiin,
 // tekee hyväksytystä tutkinnosta todistus-PDF:n (Slides-pohja) ja tulostettavan tutkintoraportti-PDF:n.
-const BACKEND_VERSION = '2.7';
+const BACKEND_VERSION = '2.8';
 const SHEET_NAME = 'Tutkinnot';
 const REPORT_FOLDER_NAME = 'Tutkintoraportit';        // tulostettavat tutkintoraportti-PDF:t
 const JSON_FOLDER_NAME = 'Tutkintoraportit data';     // JSON-varmuuskopiot
 const PDF_FOLDER_NAME = 'Todistukset SNOP';           // valmiit todistus-PDF:t
 const TEMPLATE_ID = '1m2NMN1QQvPnHYrQTFiiz9lxyA0fSFErNcO5npsjICeY'; // Slides-pohja (vuokraveneen kuljettaja, M)
 const ICC_TEMPLATE_ID = '1RylvAaOZxjbUps0iRZjjERW_RBdp6cfHlU5_dnpJbSc'; // Slides-pohja (kansainvälinen huviveneenkuljettajankirja, ICC)
+
+const INSPECTOR_SHEET = 'Tarkastajat';                // tutkinnontarkastajat: nimi, sähköposti, puhelin, allekirjoitus
+const SIGNATURE_FOLDER_NAME = 'Allekirjoitukset';     // allekirjoituskuvat (vain skriptin käyttöön)
 
 const HEADERS = ['Etunimi', 'Sukunimi', 'Katuosoite', 'Postinumero', 'Postitoimipaikka', 'Syntymäaika', 'Sähköposti',
   'Tutkintopaikka', 'Tarkastaja', 'ICC', 'Vuokravene', 'Todistus (PDF)', 'Tutkinto pvm', 'ID', 'Tutkintoraportti (PDF)'];
@@ -144,6 +147,7 @@ function makeCertificates(rec) {
       pres.replaceAllText('Etunimi Sukunimi', nimi);
       pres.replaceAllText('dd.mm.yyyy', syntyma);
       setPlaceAndDate(pres, paikkaAika);
+      applyInspector(pres, r.vastaanottajaNimi);
       if (laji === 'S') {
         pres.replaceAllText('(M)', '(S)');
         pres.replaceAllText('moottoriveneellä', 'purjeveneellä');
@@ -166,6 +170,7 @@ function makeCertificates(rec) {
       pres.replaceAllText('12.3.4567', syntyma);
       pres.replaceAllText('Paikka ja aika', paikkaAika);
       tickBoxes(pres, r.icc);
+      applyInspector(pres, r.vastaanottajaNimi);
       pres.saveAndClose();
       const pdfName = 'ICC ' + r.icc + ' - ' + nimi + ' - ' + (row[12] || '') + '.pdf';
       const pdf = outFolder.createFile(copy.getAs('application/pdf').setName(pdfName));
@@ -175,6 +180,62 @@ function makeCertificates(rec) {
     }
   }
   return made;
+}
+
+// ---------- Tutkinnontarkastajat ----------
+
+function getInspectors() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(INSPECTOR_SHEET);
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 4).getValues()
+    .filter(function (r) { return String(r[0]).trim(); })
+    .map(function (r) {
+      const m = /[-\w]{25,}/.exec(String(r[3]));
+      return { nimi: String(r[0]).trim(), email: String(r[1]).trim(), puh: String(r[2]).trim(), sigId: m ? m[0] : '' };
+    });
+}
+
+function findInspector(name) {
+  const n = String(name || '').trim().toLowerCase();
+  return getInspectors().filter(function (i) { return i.nimi.toLowerCase() === n; })[0] || null;
+}
+
+// Vaihtaa todistuksen tarkastajan nimen ja allekirjoituskuvan. Jos tarkastajalla ei ole kuvaa, kuva poistetaan.
+function applyInspector(pres, name) {
+  const insp = findInspector(name);
+  pres.replaceAllText('Jarmo Aaltonen', String(name || '').trim());
+  pres.getSlides()[0].getImages().forEach(function (img) {
+    if (img.getTop() < 400) return;              // ylhäällä oleva kuva on logo
+    if (insp && insp.sigId) {
+      try { img.replace(DriveApp.getFileById(insp.sigId).getBlob(), true); return; } catch (e) { /* ei kuvaa -> poistetaan */ }
+    }
+    img.remove();
+  });
+}
+
+// Aja kerran editorissa: luo välilehden 'Tarkastajat' ja lisää Jarmon (allekirjoitus otetaan todistuspohjasta).
+function setupInspectors() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(INSPECTOR_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(INSPECTOR_SHEET);
+    sh.getRange(1, 1, 1, 4).setValues([['Nimi', 'Sähköposti', 'Puhelin', 'Allekirjoitus (Drive-tiedoston linkki tai ID, valinnainen)']])
+      .setFontWeight('bold').setBackground('#0a4272').setFontColor('#ffffff');
+    sh.setFrozenRows(1);
+    [200, 220, 140, 360].forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  }
+  if (sh.getLastRow() < 2) {
+    let sigId = '';
+    try {
+      SlidesApp.openById(TEMPLATE_ID).getSlides()[0].getImages().forEach(function (img) {
+        if (!sigId && img.getTop() > 400) {
+          const f = getFolder(SIGNATURE_FOLDER_NAME).createFile(img.getBlob().setName('Allekirjoitus - Jarmo Aaltonen.png'));
+          sigId = f.getId();
+        }
+      });
+    } catch (e) { Logger.log('Allekirjoituksen tallennus epäonnistui: ' + e); }
+    sh.appendRow(['Jarmo Aaltonen', 'jacke.seilaa@gmail.com', '+358 44 3808569', sigId]);
+  }
 }
 
 // Ruksaa ICC-todistuksen valintaruudut: icc = 'M', 'S' tai 'MS'.
@@ -293,6 +354,7 @@ function doGet() {
     service: 'tutkinto',
     version: BACKEND_VERSION,
     pdfFolderUrl: getFolder(PDF_FOLDER_NAME).getUrl(),
+    inspectors: getInspectors().map(function (i) { return { nimi: i.nimi, email: i.email, puh: i.puh, sig: !!i.sigId }; }),
     reportFolderUrl: getFolder(REPORT_FOLDER_NAME).getUrl()
   });
 }

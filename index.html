@@ -125,20 +125,28 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <div class="field-group">
 <div class="field-group-title">Alus</div>
 <div class="field-row">
+<label>Valitse alus</label>
+<select id="alusValinta" onchange="onBoatSelect()"><option value="">Täytä itse</option></select>
+</div>
+<div class="field-row">
 <label>Aluksen nimi</label>
-<input type="text" id="alusNimi" value="s/y Quartet">
+<input type="text" id="alusNimi" placeholder="esim. s/y Quartet">
 </div>
 <div class="field-row">
 <label>Rekisterinumero</label>
-<input type="text" id="rekisteri" value="X16406">
+<input type="text" id="rekisteri" placeholder="esim. X16406">
 </div>
 <div class="field-row">
 <label>Alustyyppi</label>
-<input type="text" id="alustyyppi" value="Absolut 37">
+<input type="text" id="alustyyppi" placeholder="esim. Absolut 37">
 </div>
 <div class="field-row">
 <label>Moottoriteho</label>
-<input type="text" id="moottori" value="28 hv">
+<input type="text" id="moottori" placeholder="esim. 28 hv">
+</div>
+<div class="field-row" style="display:flex; gap:8px">
+<button class="gps-btn" style="margin:0" onclick="saveBoat()">💾 Tallenna alus valikkoon</button>
+<button class="gps-btn" style="margin:0; width:56px; background:#dc3545" onclick="deleteBoat()" title="Poista valittu alus valikosta">🗑</button>
 </div>
 </div>
 <div class="field-group">
@@ -248,18 +256,22 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 </div>
 </div>
 <div class="field-group">
-<div class="field-group-title">Tutkinnon vastaanottaja</div>
+<div class="field-group-title">Tutkinnontarkastaja</div>
+<div class="field-row">
+<label>Valitse tarkastaja (todistukseen tulee hänen nimensä ja allekirjoituksensa)</label>
+<select id="tarkastajaValinta" onchange="onInspectorSelect()"><option value="">Muu (täytä itse)</option></select>
+</div>
 <div class="field-row">
 <label>Nimi</label>
-<input type="text" id="vastaanottajaNimi" value="Jarmo Aaltonen">
+<input type="text" id="vastaanottajaNimi" placeholder="Etunimi Sukunimi">
 </div>
 <div class="field-row">
 <label>Sähköposti</label>
-<input type="email" id="vastaanottajaEmail" value="jacke.seilaa@gmail.com">
+<input type="email" id="vastaanottajaEmail" placeholder="sähköposti">
 </div>
 <div class="field-row">
 <label>Puhelinnumero</label>
-<input type="text" id="vastaanottajaPuh" value="+358 44 3808569">
+<input type="text" id="vastaanottajaPuh" placeholder="+358 xx xxx xxxx">
 </div>
 </div>
 </div>
@@ -307,8 +319,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.6';
-const APP_BUILD = '8.10.2026 klo 10:45';
+const APP_VERSION = '2.7';
+const APP_BUILD = '8.10.2026 klo 11:30';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
@@ -484,6 +496,11 @@ async function loadBackendInfo() {
   const info = await (await fetch(SYNC_URL)).json();
   backendVersion = info.version || '?';
   pdfFolderUrl = info.pdfFolderUrl || '';
+  if (Array.isArray(info.inspectors)) {
+   inspectors = info.inspectors;
+   try { localStorage.setItem('inspectors', JSON.stringify(inspectors)); } catch (e) {}
+   renderInspectors();
+  }
   try { localStorage.setItem('pdfFolderUrl', pdfFolderUrl); } catch(e) {}
  } catch (e) {
   backendVersion = 'ei yhteyttä';
@@ -795,7 +812,7 @@ state, paatos, fields: {}, savedData, queue,
 icc: getICCValue(),
 vuokravene: getVuokraveneValue()
 };
-['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','paiva','vesialue','tuuli','nakyvyys','vahvuudet','kehitettavaa','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
+['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','paiva','vesialue','tuuli','nakyvyys','vahvuudet','kehitettavaa','alusNimi','rekisteri','alustyyppi','moottori','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => {
 const el = document.getElementById(id);
 if (el) data.fields[id] = el.value;
 });
@@ -816,9 +833,7 @@ if (data.paatos) setPaatos(data.paatos);
 if (data.fields) {
 for (const [id, val] of Object.entries(data.fields)) {
 const el = document.getElementById(id);
-if (el && !['alusNimi','rekisteri','alustyyppi','moottori','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].includes(id)) {
-el.value = val;
-}
+if (el) el.value = val;
 }
 }
 if (data.icc) {
@@ -833,15 +848,6 @@ if (data.savedData) savedData = data.savedData;
 if (data.queue) queue = data.queue;
 } catch(e) {}
 
-const defaults = {
-vastaanottajaNimi: 'Jarmo Aaltonen',
-vastaanottajaEmail: 'jacke.seilaa@gmail.com',
-vastaanottajaPuh: '+358 44 3808569'
-};
-for (const [id, def] of Object.entries(defaults)) {
-const el = document.getElementById(id);
-if (el && !el.value) el.value = def;
-}
 }
 
 const inputFields = document.querySelectorAll('input[type="text"], input[type="email"], input[type="date"]');
@@ -867,8 +873,76 @@ document.querySelectorAll('input[type="checkbox"]').forEach(el => {
 el.addEventListener('change', saveLocal);
 });
 
+// ---------- Alukset (tallennetaan laitteelle) ----------
+let boats = [];
+let inspectors = [];
+
+function loadBoats() {
+ try {
+  const raw = localStorage.getItem('boats');
+  boats = raw ? JSON.parse(raw) : [{ nimi: 's/y Quartet', rekisteri: 'X16406', tyyppi: 'Absolut 37', moottori: '28 hv' }];
+ } catch (e) { boats = []; }
+ let saved = '';
+ try { saved = localStorage.getItem('alusValinta') || ''; } catch (e) {}
+ renderBoats(saved !== '' && boats[parseInt(saved, 10)] ? parseInt(saved, 10) : null);
+}
+function persistBoats() { try { localStorage.setItem('boats', JSON.stringify(boats)); } catch (e) {} }
+function renderBoats(selected) {
+ const sel = document.getElementById('alusValinta');
+ sel.innerHTML = '<option value="">Täytä itse</option>' + boats.map((b, i) => `<option value="${i}">${b.nimi}${b.tyyppi ? ' (' + b.tyyppi + ')' : ''}</option>`).join('');
+ sel.value = selected == null ? '' : String(selected);
+ try { localStorage.setItem('alusValinta', sel.value); } catch (e) {}
+}
+function onBoatSelect() {
+ const v = document.getElementById('alusValinta').value;
+ try { localStorage.setItem('alusValinta', v); } catch (e) {}
+ const b = v === '' ? { nimi: '', rekisteri: '', tyyppi: '', moottori: '' } : boats[parseInt(v, 10)];
+ ['nimi:alusNimi', 'rekisteri:rekisteri', 'tyyppi:alustyyppi', 'moottori:moottori'].forEach(p => {
+  const [k, id] = p.split(':'); document.getElementById(id).value = b[k] || '';
+ });
+ saveLocal();
+}
+function saveBoat() {
+ const b = { nimi: getField('alusNimi'), rekisteri: getField('rekisteri'), tyyppi: getField('alustyyppi'), moottori: getField('moottori') };
+ if (!b.nimi) { showStatus('Anna aluksen nimi ennen tallennusta.', 'error'); return; }
+ const idx = boats.findIndex(x => x.nimi.toLowerCase() === b.nimi.toLowerCase());
+ if (idx >= 0) boats[idx] = b; else boats.push(b);
+ persistBoats();
+ renderBoats(idx >= 0 ? idx : boats.length - 1);
+ showStatus('✓ Alus tallennettu valikkoon (vain tälle laitteelle).', 'success');
+}
+function deleteBoat() {
+ const v = document.getElementById('alusValinta').value;
+ if (v === '') { showStatus('Valitse ensin alus, jonka haluat poistaa.', 'info'); return; }
+ const b = boats[parseInt(v, 10)];
+ if (!confirm('Poistetaanko "' + b.nimi + '" valikosta?')) return;
+ boats.splice(parseInt(v, 10), 1);
+ persistBoats(); renderBoats(); onBoatSelect();
+}
+
+// ---------- Tutkinnontarkastajat (lista tulee Sheetsin välilehdeltä "Tarkastajat") ----------
+function renderInspectors() {
+ const sel = document.getElementById('tarkastajaValinta');
+ let saved = '';
+ try { saved = localStorage.getItem('tarkastajaValinta') || ''; } catch (e) {}
+ sel.innerHTML = '<option value="">Muu (täytä itse)</option>' + inspectors.map(i => `<option value="${i.nimi}">${i.nimi}</option>`).join('');
+ if (inspectors.some(i => i.nimi === saved)) sel.value = saved;
+}
+function onInspectorSelect() {
+ const v = document.getElementById('tarkastajaValinta').value;
+ try { localStorage.setItem('tarkastajaValinta', v); } catch (e) {}
+ const i = inspectors.find(x => x.nimi === v);
+ document.getElementById('vastaanottajaNimi').value = i ? i.nimi : '';
+ document.getElementById('vastaanottajaEmail').value = i ? i.email : '';
+ document.getElementById('vastaanottajaPuh').value = i ? i.puh : '';
+ saveLocal();
+}
+
 initState();
 loadLocal();
+loadBoats();
+try { inspectors = JSON.parse(localStorage.getItem('inspectors') || '[]'); } catch (e) { inspectors = []; }
+renderInspectors();
 for (const secNum of Object.keys(sections)) {
 renderSection(parseInt(secNum));
 }
