@@ -319,8 +319,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <script>
 // Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
-const APP_VERSION = '2.7';
-const APP_BUILD = '8.10.2026 klo 11:30';
+const APP_VERSION = '2.8';
+const APP_BUILD = '8.10.2026 klo 12:10';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1QLVX3voT4ihmRxhwXUra-jLlRYF5hFsoZaWc2tNwbEo/edit';
 const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
 
@@ -438,7 +438,11 @@ return [parts.slice(0, postIdx).join(' '), parts[postIdx], parts.slice(postIdx +
 return [osoiteStr, '', ''];
 }
 
+let saving = false;
+
 function showPreview() {
+if (saving) { showStatus('Tallennus on kesken, odota hetki.', 'info'); return; }
+if (!getField('kokelasNimi')) { showStatus('Kirjoita kokelaan nimi ennen tallennusta.', 'error'); return; }
 const kokelasNimi = getField('kokelasNimi');
 const syntymaika = getField('syntymaika');
 const osoite = getField('osoite');
@@ -569,6 +573,16 @@ window.addEventListener('online', () => flushQueue(false));
 setInterval(() => flushQueue(false), 60000);
 
 async function confirmSaveData() {
+if (saving) return;
+saving = true;
+document.querySelectorAll('.btn-save, .modal-btn-confirm').forEach(b => b.disabled = true);
+try { await doSaveData(); } finally {
+ saving = false;
+ document.querySelectorAll('.btn-save, .modal-btn-confirm').forEach(b => b.disabled = false);
+}
+}
+
+async function doSaveData() {
 closePreview();
 
 const kokelasNimi = getField('kokelasNimi');
