@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
@@ -19,6 +18,10 @@ header h1 { font-size: 1.05rem; font-weight: 700; }
 header p { font-size: 0.76rem; opacity: 0.8; margin-top: 2px; }
 .progress-bar { background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; }
 .progress-fill { height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s ease; }
+.sync-badge { display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; background: rgba(255,255,255,0.2); }
+.sync-badge.ok { background: #28a745; }
+.sync-badge.pending { background: #e0a800; color: #1a2a3a; }
+.sync-badge.off { background: #dc3545; }
 .section { margin: 12px 12px 0; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
 .section-header { background: var(--blue); color: white; padding: 9px 14px; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 .section-note { background: var(--light); border-left: 3px solid var(--blue); font-size: 0.77rem; color: var(--muted); padding: 7px 14px; line-height: 1.4; font-style: italic; }
@@ -83,7 +86,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <header>
 <h1>Tutkintoraportti – SNOP</h1>
 <p>s/y Quartet | Tarkistuslista ja tutkintoraportti</p>
-<p style="font-size: 0.7rem; opacity: 0.7; margin-top: 6px;">v1.3 | <span id="versionTime">--:--:--</span></p>
+<p style="font-size: 0.7rem; opacity: 0.7; margin-top: 6px;">v2.0 | <span id="versionTime">--:--:--</span></p>
+<span class="sync-badge" id="syncBadge" onclick="flushQueue(true)">Drive: –</span>
 <div class="progress-bar">
 <div class="progress-fill" id="progressFill" style="width:0%"></div>
 </div>
@@ -269,7 +273,7 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <div class="modal-header">Esikatselu – Tarkista ennen tallentamista</div>
 <div id="previewContent"></div>
 <div class="modal-buttons">
-<button class="modal-btn modal-btn-confirm" onclick="confirmSaveData()">✓ Tallenna & Kopioi Sheets</button>
+<button class="modal-btn modal-btn-confirm" onclick="confirmSaveData()">✓ Tallenna Driveen</button>
 <button class="modal-btn modal-btn-cancel" onclick="closePreview()">Peruuta</button>
 </div>
 </div>
@@ -277,8 +281,8 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 
 <div id="copyModal" class="modal">
 <div class="modal-content">
-<div class="modal-header">📋 Kopioi Google Sheetsiin</div>
-<p style="font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);">Klikkaa painiketta ja liitä Google Sheetsiin.</p>
+<div class="modal-header">📋 Varakopio: kopioi Google Sheetsiin</div>
+<p style="font-size: 0.9rem; margin-bottom: 16px; color: var(--muted);">Drive-tallennus ei onnistunut juuri nyt. Tiedot ovat jonossa laitteella ja lähtevät automaattisesti kun yhteys toimii. Halutessasi voit kopioida rivin myös käsin.</p>
 <textarea id="copyArea" readonly style="width: 100%; height: 150px; font-size: 0.75rem; font-family: monospace; padding: 12px; border: 1.5px solid var(--border); border-radius: 7px; background: #fafcff;"></textarea>
 <div class="modal-buttons" style="margin-top: 20px;">
 <button class="modal-btn modal-btn-confirm" onclick="copyToClipboard()">📋 Kopioi leikepöydälle</button>
@@ -290,6 +294,9 @@ textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
 <div id="statusMessage" class="status-message"></div>
 
 <script>
+// Google Apps Script -web-sovelluksen /exec-osoite (ks. Code.gs). Tyhjä = ei Drive-synkronointia.
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycbyxK1Xk7xA2kYEd_JF-6c7pr5AddlqxRuxOGOoaIu83Z-QO1Qn-C9_XysDxKlFWknX2/exec';
+
 const sections = {
 1: ["Miehistön/Asiakkaiden briiffaus: Näytetty liivien käyttö, VHF:n käyttö hätätilanteessa, sammuttimet ja WC:n käyttö.", "Lähtötarkastus: Moottorin tarkastus tehty (vesi, öljy, hihnat, pilssi, jäähdytysveden kierto, sähköt).", "Sääkatsaus: Tarkistettu tuore ennuste ja kerrottu miehistölle/asiakkaille matkasuunnitelma.", "Veneen lähtökunto: Irtotavarat kansilla ja sisällä varmistettu, kansiluukut kiinni mutta ei lukossa."],
 2: ["Lähdön suunnittelu: Kerrottu miehistölle, kuka irrottaa minkäkin köyden ja mihin suuntaan vene kääntyy. Asiakkaiden ei oleteta osallistuvan miehistötehtäviin (vuokravenetutkinto).", "Laiturimanööverit: Vene tuotu laituriin hallitusti (ei törmäystä tai miehistön joutumista kurottelemaan).", "Poijuun tulo: Vene pysähtynyt poijun kohdalle niin, että poijuhaka on helppo kiinnittää.", "Potkurivirran hallinta: Osoitettu ymmärrys potkurivirran vaikutuksesta peruutettaessa."],
@@ -302,6 +309,8 @@ const sections = {
 const state = {};
 let paatos = '';
 let savedData = [];
+let queue = [];
+let flushing = false;
 
 function initState() {
 for (const [sec, items] of Object.entries(sections)) {
@@ -438,11 +447,8 @@ document.getElementById('previewModal').classList.remove('show');
 }
 
 function formatDate(isoDate) {
- // Muunna yyyy-mm-dd muotoon pp.mm.yyyy
  if (!isoDate || isoDate === '') return '';
- // Jos on jo muodossa pp.mm.yyyy, palauta sellaisenaan
  if (isoDate.includes('.')) return isoDate;
- // Muunna yyyy-mm-dd muotoon pp.mm.yyyy
  const parts = isoDate.split('-');
  if (parts.length === 3) {
  const [yyyy, mm, dd] = parts;
@@ -459,11 +465,64 @@ function updateClock() {
  document.getElementById('versionTime').textContent = `${hh}:${min}:${ss}`;
 }
 
-// Päivitä kello joka sekunti
 setInterval(updateClock, 1000);
 updateClock();
 
-function confirmSaveData() {
+// ---------- Drive-synkronointi ----------
+
+function buildReport() {
+const checks = {};
+for (const [sec, items] of Object.entries(sections)) {
+checks[sec] = items.map((text, i) => ({ teksti: text, rastitettu: !!state[sec][i] }));
+}
+const report = { checks, paatos };
+['kokelasNimi','syntymaika','osoite','puhelin','kokelasEmail','alusNimi','rekisteri','alustyyppi','moottori','paiva','vesialue','tuuli','nakyvyys','vahvuudet','kehitettavaa','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].forEach(id => { report[id] = getField(id); });
+report.icc = getICCValue();
+report.vuokravene = getVuokraveneValue();
+report.tallennettu = new Date().toISOString();
+return report;
+}
+
+function setBadge(cls, text) {
+const el = document.getElementById('syncBadge');
+el.className = 'sync-badge ' + cls;
+el.textContent = text;
+}
+
+function updateBadge() {
+if (!SYNC_URL) { setBadge('off', 'Drive: ei asetettu'); return; }
+if (queue.length) setBadge('pending', `Drive: ${queue.length} odottaa (napauta)`);
+else setBadge('ok', 'Drive: kaikki tallennettu');
+}
+
+async function flushQueue(manual) {
+if (!SYNC_URL || flushing || !queue.length) { updateBadge(); return; }
+flushing = true;
+setBadge('pending', 'Drive: lähetetään...');
+let failed = false;
+while (queue.length) {
+const rec = queue[0];
+try {
+const resp = await fetch(SYNC_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(rec) });
+const res = await resp.json();
+if (!res.ok) throw new Error(res.error || 'virhe');
+queue.shift();
+saveLocal();
+} catch (e) {
+failed = true;
+break;
+}
+}
+flushing = false;
+updateBadge();
+if (manual) showStatus(failed ? 'Drive-lähetys epäonnistui, yritetään myöhemmin uudelleen.' : '✓ Tallennettu Driveen', failed ? 'error' : 'success');
+return !failed;
+}
+
+window.addEventListener('online', () => flushQueue(false));
+setInterval(() => flushQueue(false), 60000);
+
+async function confirmSaveData() {
 closePreview();
 
 const kokelasNimi = getField('kokelasNimi');
@@ -477,16 +536,24 @@ const vuokravene = getVuokraveneValue();
 
 const [etunimi, sukunimi] = splitNimi(kokelasNimi);
 const [katuosoite, postinumero, kaupunki] = splitOsoite(osoite);
-
-// Muunna päivämäärä pp.mm.yyyy muotoon
 const formattedDate = formatDate(paiva);
 
-// Poistettu paatosText - L-sarake jätetään tyhjäksi PDF-integraatiota varten
+// L-sarake jätetään tyhjäksi PDF-integraatiota varten
 const row = [etunimi, sukunimi, katuosoite, postinumero, kaupunki, syntymaika, kokelasEmail, vesialue, getField('vastaanottajaNimi'), icc, vuokravene, '', formattedDate];
 
+const rec = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), row, report: buildReport() };
 savedData.push(row);
+queue.push(rec);
 saveLocal();
+
+if (!SYNC_URL) {
 showCopyModal(row);
+showStatus('Drive-osoitetta ei ole asetettu – tallennettu vain laitteelle.', 'error');
+} else {
+const ok = await flushQueue(false);
+if (ok) showStatus('✓ Tallennettu Driveen', 'success');
+else { showCopyModal(row); showStatus('Ei yhteyttä – tallennettu laitteelle, lähtee automaattisesti myöhemmin.', 'error'); }
+}
 
 setTimeout(() => { resetCokelas(); }, 500);
 }
@@ -495,7 +562,6 @@ function showCopyModal(row) {
 const tsv = row.join('\t');
 document.getElementById('copyArea').value = tsv;
 document.getElementById('copyModal').classList.add('show');
-showStatus('✓ Tallennettu paikallisesti! Kopioi nyt Google Sheetsiin.', 'success');
 }
 
 function closeCopyModal() {
@@ -506,7 +572,7 @@ function copyToClipboard() {
 const textarea = document.getElementById('copyArea');
 textarea.select();
 document.execCommand('copy');
-showStatus('📋 Kopioitu leikepöydälle! Liitä Google Sheetsiin.', 'success');
+showStatus('📋 Kopioitu leikepöydälle!', 'success');
 }
 
 function showStatus(message, type = 'info') {
@@ -537,7 +603,6 @@ const osoite = getField('osoite');
 const kokelasEmail = getField('kokelasEmail');
 const vahvuudet = getField('vahvuudet');
 const kehitettavaa = getField('kehitettavaa');
-const vastaanottajaNimi = getField('vastaanottajaNimi');
 const paatosText = paatos === 'hyvaksytty' ? 'HYVÄKSYTTY ✓' : paatos === 'uusinta' ? 'UUSINTA VAADITAAN' : '(ei merkitty)';
 
 let body = `TARKISTUSLISTA JA TUTKINTORAPORTTI
@@ -681,7 +746,7 @@ btn.disabled = false;
 function saveLocal() {
 try {
 const data = {
-state, paatos, fields: {}, savedData,
+state, paatos, fields: {}, savedData, queue,
 icc: getICCValue(),
 vuokravene: getVuokraveneValue()
 };
@@ -706,7 +771,6 @@ if (data.paatos) setPaatos(data.paatos);
 if (data.fields) {
 for (const [id, val] of Object.entries(data.fields)) {
 const el = document.getElementById(id);
-// Älä korvaa alus-pohjatietoja tai vastaanottaja-oletuksia
 if (el && !['alusNimi','rekisteri','alustyyppi','moottori','vastaanottajaNimi','vastaanottajaEmail','vastaanottajaPuh'].includes(id)) {
 el.value = val;
 }
@@ -721,6 +785,7 @@ document.getElementById('vuokraveneM').checked = data.vuokravene.includes('M');
 document.getElementById('vuokraveneS').checked = data.vuokravene.includes('S');
 }
 if (data.savedData) savedData = data.savedData;
+if (data.queue) queue = data.queue;
 } catch(e) {}
 
 const defaults = {
@@ -770,6 +835,9 @@ const mm = String(today.getMonth() + 1).padStart(2, '0');
 const dd = String(today.getDate()).padStart(2, '0');
 document.getElementById('paiva').value = `${yyyy}-${mm}-${dd}`;
 }
+
+updateBadge();
+flushQueue(false);
 </script>
 
 </body>
